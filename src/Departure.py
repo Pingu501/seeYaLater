@@ -23,7 +23,6 @@ def parseDateStringToDate(date_string: str):
 class DepartureManager:
 
     def __init__(self):
-        self.departures = {}
         self.__prepareDatabase()
 
     def __prepareDatabase(self):
@@ -43,17 +42,19 @@ class DepartureManager:
         cursor = self.sql_connection.cursor()
         cursor.execute(sql_command)
         self.sql_connection.commit()
+        return cursor.fetchone()
 
     def createOrUpdateDepartures(self, json):
         for departureJson in json['Departures']:
             departure = Departure(departureJson)
 
-            if departure.id in self.departures:
+            result = self.__runSQLCommand('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
+
+            if result[0]:
                 self.__persistDepartureUpdate(departure)
             else:
                 self.__persistDepartureCreation(departure)
 
-            self.departures[departure.id] = departure
 
     def __persistDepartureCreation(self, departure: Departure):
         command = """

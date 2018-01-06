@@ -18,4 +18,4 @@ while True:
     parsedResponse = json.loads(response)
     departureManager.createOrUpdateDepartures(parsedResponse)
 
-    time.sleep(10)
+    time.sleep(60)
