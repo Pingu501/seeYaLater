@@ -4,7 +4,7 @@ import time
 
 import json
 
-import Departure
+from src import Departure
 
 departureManager = Departure.DepartureManager()
 
