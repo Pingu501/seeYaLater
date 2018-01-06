@@ -1,0 +1,16 @@
+# SeeYaLater
+
+Some bus lines in Dresden seem to be always late ...
+and nobody has the time to proof this right.
+
+But for this we invented computer! ;)
+
+Little Python Script running in the background asking the API of the DVB 
+frequently for all departures in Dresden.
+
+[API documentation](https://github.com/kiliankoe/vvo/blob/master/documentation/webapi.md)
+
+## Requirements
+
+- Python 3
+- SQL to store the departure date
