@@ -2,9 +2,24 @@ import datetime
 import sqlite3
 
 
+def isValidDepartureJson(departure_json):
+    is_valid = True
+    fields = ['Id', 'LineName', 'Direction', 'RealTime', 'ScheduledTime']
+
+    for field in fields:
+        try:
+            departure_json[field]
+        except KeyError:
+            is_valid = False
+            pass
+
+    return is_valid
+
+
 class Departure:
 
     def __init__(self, json, stop_id):
+        print(json)
         self.id = json['Id']
         self.line = json['LineName']
         self.direction = json['Direction']

@@ -20,7 +20,11 @@ while True:
 
         response = urlopen(request).read().decode()
         parsedResponse = json.loads(response)
-        departureManager.createOrUpdateDepartures(parsedResponse, stop_id)
+
+        if Departure.isValidDepartureJson(parsedResponse):
+            departureManager.createOrUpdateDepartures(parsedResponse, stop_id)
+        else:
+            print('JSON: {} \n is not valid'.format(parsedResponse))
 
     print("{}: fetched {} stations".format(datetime.datetime.now(), len(stop_ids)))
     time.sleep(60)
