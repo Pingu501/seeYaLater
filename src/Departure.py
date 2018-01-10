@@ -19,7 +19,6 @@ def isValidDepartureJson(departure_json):
 class Departure:
 
     def __init__(self, json, stop_id):
-        print(json)
         self.id = json['Id']
         self.line = json['LineName']
         self.direction = json['Direction']
@@ -63,8 +62,12 @@ class DepartureManager:
 
     def createOrUpdateDepartures(self, json, stop_id):
         for departureJson in json['Departures']:
-            departure = Departure(departureJson, stop_id)
 
+            if not isValidDepartureJson(departureJson):
+                print('JSON: {} \n is not valid'.format(departureJson))
+                continue
+
+            departure = Departure(departureJson, stop_id)
             result = self.__runSQLCommand('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
 
             if result[0]:
