@@ -26,7 +26,10 @@ frequently for all departures in Dresden.
 
 You'll need to create a new service. Just copy the `seeYaLater.service` file to `/etc/systemd/system`.
 
-You also have to create a new user which runs the service `sudo useradd -M --system seeYaLater`
+You also have to create a new user which runs the service `sudo useradd -M --system seeYaLater`.
+Make sure the user running the service has write access to the folder where this project is stored (`sudo chown -R seeYaLater /usr/src/seeYaLater/`).
+
+TODO: clean up this and check if there is a better location.
 
 Before enabling the service, make sure the path for python and seeYaLater for `ExecStart` are correct.
 
