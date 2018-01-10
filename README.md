@@ -21,3 +21,29 @@ frequently for all departures in Dresden.
 | :-------- | ---- |
 | HBF | 33000028 |
 | Wasaplatz | 33000115 |
+
+## Running this project as a service (for raspberry pi)
+
+You'll need to create a new service. Just copy the `seeYaLater.service` file to `/etc/systemd/system`.
+
+You also have to create a new user which runs the service `sudo useradd -M --system seeYaLater`
+
+Before enabling the service, make sure the path for python and seeYaLater for `ExecStart` are correct.
+
+```
+systemctl daemon-reload
+systemctl enable seeYaLater
+systemctl start seeYaLater
+```
+
+Status checking is always possible with 
+
+```
+systemctl status homebridge
+```
+
+or detailed with
+
+```
+journalctl -u seeYaLater
+```
