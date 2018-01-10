@@ -4,12 +4,13 @@ import sqlite3
 
 class Departure:
 
-    def __init__(self, json):
+    def __init__(self, json, stop_id):
         self.id = json['Id']
         self.line = json['LineName']
         self.direction = json['Direction']
         self.realTime = parseDateStringToDate(json['RealTime'])
         self.scheduledTime = parseDateStringToDate(json['ScheduledTime'])
+        self.stop_id = stop_id
 
     def getDelay(self):
         print('{} to {} is to late by {}'.format(self.line, self.direction, self.realTime - self.scheduledTime))
@@ -33,7 +34,8 @@ class DepartureManager:
             line VARCHAR(4),
             direction VARCHAR(42),
             realTime DATETIME,
-            scheduledTime DATETIME
+            scheduledTime DATETIME,
+            station INT
             )
             
         """)
@@ -44,9 +46,9 @@ class DepartureManager:
         self.sql_connection.commit()
         return cursor.fetchone()
 
-    def createOrUpdateDepartures(self, json):
+    def createOrUpdateDepartures(self, json, stop_id):
         for departureJson in json['Departures']:
-            departure = Departure(departureJson)
+            departure = Departure(departureJson, stop_id)
 
             result = self.__runSQLCommand('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
 
@@ -55,13 +57,12 @@ class DepartureManager:
             else:
                 self.__persistDepartureCreation(departure)
 
-
     def __persistDepartureCreation(self, departure: Departure):
         command = """
-            INSERT INTO departure (id, line, direction, realTime, scheduledTime)
-            VALUES ({}, '{}', '{}', '{}', '{}')
+            INSERT INTO departure (id, line, direction, realTime, scheduledTime, station)
+            VALUES ({}, '{}', '{}', '{}', '{}', {})
         """.format(departure.id, departure.line, departure.direction, departure.realTime,
-                   departure.scheduledTime)
+                   departure.scheduledTime, departure.stop_id)
 
         self.__runSQLCommand(command)
 

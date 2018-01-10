@@ -8,14 +8,19 @@ from src import Departure
 
 departureManager = Departure.DepartureManager()
 
+stop_ids = [33000028, 33000115]
+
 while True:
-    url = 'https://webapi.vvo-online.de/dm'
-    post_fields = {'stopid': '33000028', 'limit': 10, 'mot': '[Tram, CityBus]'}
+    for stop_id in stop_ids:
+        print("fetching stop with id {}".format(stop_id))
+        url = 'https://webapi.vvo-online.de/dm'
+        post_fields = {'stopid': stop_id, 'limit': 10, 'mot': '[Tram, CityBus]'}
 
-    request = Request(url, urlencode(post_fields).encode())
+        request = Request(url, urlencode(post_fields).encode())
 
-    response = urlopen(request).read().decode()
-    parsedResponse = json.loads(response)
-    departureManager.createOrUpdateDepartures(parsedResponse)
+        response = urlopen(request).read().decode()
+        parsedResponse = json.loads(response)
+        departureManager.createOrUpdateDepartures(parsedResponse, stop_id)
+        print("ended fetch")
 
     time.sleep(60)

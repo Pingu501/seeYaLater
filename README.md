@@ -14,3 +14,10 @@ frequently for all departures in Dresden.
 
 - Python 3
 - SQL to store the departure date
+
+## Stations 
+
+| Station | ID |
+| :-------- | ---- |
+| HBF | 33000028 |
+| Wasaplatz | 33000115 |
