@@ -5,9 +5,9 @@ import datetime
 
 import json
 
-from src import Departure
+from src import DepartureManager
 
-departureManager = Departure.DepartureManager()
+departureManager = DepartureManager()
 
 stop_ids = [33000028, 33000115]
 
