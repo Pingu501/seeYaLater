@@ -22,31 +22,10 @@ frequently for all departures in Dresden.
 | HBF | 33000028 |
 | Wasaplatz | 33000115 |
 
-## Running this project as a service (for raspberry pi)
+## Running this project in background
 
-You'll need to create a new service. Just copy the `seeYaLater.service` file to `/etc/systemd/system`.
-
-You also have to create a new user which runs the service `sudo useradd -M --system seeYaLater`.
-Make sure the user running the service has write access to the folder where this project is stored (`sudo chown -R seeYaLater:seeYaLater /usr/src/seeYaLater/`).
-
-TODO: clean up this and check if there is a better location.
-
-Before enabling the service, make sure the path for python and seeYaLater for `ExecStart` are correct.
+To run this in background use `nohup`. This will also survice ssh hangups.
 
 ```
-systemctl daemon-reload
-systemctl enable seeYaLater
-systemctl start seeYaLater
-```
-
-Status checking is always possible with 
-
-```
-systemctl status seeYaLater
-```
-
-or detailed with
-
-```
-journalctl -u seeYaLater
+nohup python3.6 main.py
 ```
