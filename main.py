@@ -1,7 +1,6 @@
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 import time
-import datetime
 
 import json
 
@@ -11,16 +10,29 @@ departureManager = DepartureManager()
 
 stop_ids = [33000028, 33000115]
 
-while True:
-    for stop_id in stop_ids:
-        url = 'https://webapi.vvo-online.de/dm'
-        post_fields = {'stopid': stop_id, 'limit': 10, 'mot': '[Tram, CityBus]'}
 
-        request = Request(url, urlencode(post_fields).encode())
+def fetchStation(station_id):
+    url = 'https://webapi.vvo-online.de/dm'
+    post_fields = {'stopid': station_id, 'limit': 10, 'mot': '[Tram, CityBus]'}
 
+    request = Request(url, urlencode(post_fields).encode())
+
+    try:
         response = urlopen(request).read().decode()
-        parsedResponse = json.loads(response)
-        departureManager.createOrUpdateDepartures(parsedResponse, stop_id)
+    except:
+        print("could not connect to the API")
+        return
 
-    print("{}: fetched {} stations".format(datetime.datetime.now(), len(stop_ids)))
-    time.sleep(60)
+    parsed_response = json.loads(response)
+    departureManager.createOrUpdateDepartures(parsed_response, station_id)
+
+
+def taskRunner():
+    while True:
+        for station_id in stop_ids:
+            fetchStation(station_id)
+
+        time.sleep(60)
+
+
+taskRunner()

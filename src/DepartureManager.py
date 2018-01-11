@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 
 from src import Departure
 
@@ -42,6 +43,8 @@ class DepartureManager:
                 self.__persistDepartureUpdate(departure)
             else:
                 self.__persistDepartureCreation(departure)
+
+        print("{} fetched station with id {}".format(datetime.datetime.now(), stop_id))
 
     def __persistDepartureCreation(self, departure: Departure):
         command = """
