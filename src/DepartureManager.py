@@ -1,7 +1,7 @@
 import sqlite3
-import datetime
 
 from src import Departure
+from src import Logger
 
 
 class DepartureManager:
@@ -44,7 +44,7 @@ class DepartureManager:
             else:
                 self.__persistDepartureCreation(departure)
 
-        print("{} fetched station with id {}".format(datetime.datetime.now(), stop_id))
+        Logger.createLogEntry("fetched station with id {}".format(stop_id))
 
     def __persistDepartureCreation(self, departure: Departure):
         command = """
