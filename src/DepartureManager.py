@@ -1,43 +1,21 @@
-import sqlite3
-
 from src import Departure
 from src import Logger
 
 
 class DepartureManager:
 
-    def __init__(self):
-        self.__prepareDatabase()
-
-    def __prepareDatabase(self):
-        self.sql_connection = sqlite3.connect('seeYaLater.db')
-        self.__runSQLCommand("""
-            CREATE TABLE IF NOT EXISTS departure (
-            id INT NOT NULL PRIMARY KEY,
-            line VARCHAR(4),
-            direction VARCHAR(42),
-            realTime DATETIME,
-            scheduledTime DATETIME,
-            station INT
-            )
-
-        """)
-
-    def __runSQLCommand(self, sql_command):
-        cursor = self.sql_connection.cursor()
-        cursor.execute(sql_command)
-        self.sql_connection.commit()
-        return cursor.fetchone()
+    def __init__(self, sqlHelper):
+        self.sql_helper = sqlHelper
 
     def createOrUpdateDepartures(self, json, stop_id):
         for departureJson in json['Departures']:
 
             if not isValidDepartureJson(departureJson):
-                print('JSON: {} \n is not valid'.format(departureJson))
+                Logger.createLogEntry('JSON: {} \n is not valid'.format(departureJson))
                 continue
 
             departure = Departure(departureJson, stop_id)
-            result = self.__runSQLCommand('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
+            result = self.sql_helper.execute('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
 
             if result[0]:
                 self.__persistDepartureUpdate(departure)
@@ -53,10 +31,10 @@ class DepartureManager:
         """.format(departure.id, departure.line, departure.direction, departure.realTime,
                    departure.scheduledTime, departure.stop_id)
 
-        self.__runSQLCommand(command)
+        self.sql_helper.execute(command)
 
     def __persistDepartureUpdate(self, departure: Departure):
-        self.__runSQLCommand("""
+        self.sql_helper.execute("""
                     UPDATE departure SET scheduledTime = '{}' WHERE id = {}
                 """.format(departure.scheduledTime, departure.id))
 
