@@ -6,9 +6,16 @@ departureKeys = ['id', 'line', 'direction', 'realTime', 'scheduledTime', 'statio
 
 
 def getAllDepartures():
-    sqlHelper = SqlHelper()
-    result = sqlHelper.execute('SELECT * FROM departure')
+    return __queryRunner('SELECT * FROM departure')
 
+
+def getAllDeparturesByStation(station_id):
+    return __queryRunner('SELECT * FROM departure WHERE station = {}'.format(station_id))
+
+
+def __queryRunner(query):
+    sqlHelper = SqlHelper()
+    result = sqlHelper.execute(query)
     return __jsonCreator(result, departureKeys)
 
 
