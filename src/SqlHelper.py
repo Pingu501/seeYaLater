@@ -23,4 +23,4 @@ class SqlHelper:
         cursor = self.connection.cursor()
         cursor.execute(sql_command)
         self.connection.commit()
-        return cursor.fetchone()
+        return cursor.fetchall()

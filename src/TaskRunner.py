@@ -29,7 +29,7 @@ def fetchStation(station_id, departure_manager):
 def run():
     sqlHelper = SqlHelper()
     departure_manager = DepartureManager(sqlHelper)
-    print("starting task runner")
+
     while True:
         for station_id in stop_ids:
             fetchStation(station_id, departure_manager)
