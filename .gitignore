@@ -3,3 +3,4 @@ __pycache__/
 seeYaLater.db
 nohup.out
 history.log
+*/*.pyc
