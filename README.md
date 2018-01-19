@@ -21,6 +21,7 @@ frequently for all departures in Dresden.
 | :-------- | ---- |
 | HBF | 33000028 |
 | Wasaplatz | 33000115 |
+| Straßburger Platz | 33000007 |
 
 ## Running this project in background
 

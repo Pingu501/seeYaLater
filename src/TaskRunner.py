@@ -7,7 +7,7 @@ import json
 from src import DepartureManager, Logger
 
 
-stop_ids = [33000028, 33000115]
+stop_ids = [33000028, 33000115, 33000007]
 
 
 def fetchStation(station_id):
