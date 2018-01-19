@@ -5,7 +5,7 @@ def makeString(arg):
     return "'" + str(arg) + "'"
 
 
-def isValidDepartureJson(departure_json):
+def __isValidDepartureJson(departure_json):
     is_valid = True
     fields = ['Id', 'LineName', 'Direction', 'RealTime', 'ScheduledTime']
 
@@ -13,7 +13,8 @@ def isValidDepartureJson(departure_json):
         try:
             departure_json[field]
         except KeyError:
-            is_valid = False
+            if not field == "RealTime":
+                is_valid = False
             pass
 
     return is_valid
@@ -22,7 +23,7 @@ def isValidDepartureJson(departure_json):
 def createOrUpdateDepartures(json, stop_id):
     for departureJson in json['Departures']:
 
-        if not isValidDepartureJson(departureJson):
+        if not __isValidDepartureJson(departureJson):
             Logger.createLogEntry('JSON: {} \n is not valid'.format(departureJson))
             continue
 

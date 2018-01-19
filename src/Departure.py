@@ -3,12 +3,19 @@ import datetime
 
 class Departure:
 
-    def __init__(self, json, stop_id):
+    def __init__(self, json: dict, stop_id):
         self.id = json['Id']
         self.line = json['LineName']
         self.direction = json['Direction']
-        self.realTime = parseDateStringToDate(json['RealTime'])
         self.scheduledTime = parseDateStringToDate(json['ScheduledTime'])
+
+        # sometimes there is no real time provided
+        # we assume that it equals scheduled time
+        if 'RealTime' in json.keys():
+            self.realTime = parseDateStringToDate(json['RealTime'])
+        else:
+            self.realTime = parseDateStringToDate(json['ScheduledTime'])
+
         self.stop_id = stop_id
 
     def getDelay(self):
