@@ -1,42 +1,8 @@
-from src import Departure
-from src import Logger
+from src import Departure, Logger, SqlHelper
 
 
-class DepartureManager:
-
-    def __init__(self, sqlHelper):
-        self.sql_helper = sqlHelper
-
-    def createOrUpdateDepartures(self, json, stop_id):
-        for departureJson in json['Departures']:
-
-            if not isValidDepartureJson(departureJson):
-                Logger.createLogEntry('JSON: {} \n is not valid'.format(departureJson))
-                continue
-
-            departure = Departure(departureJson, stop_id)
-            result = self.sql_helper.execute('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
-
-            if result[0]:
-                self.__persistDepartureUpdate(departure)
-            else:
-                self.__persistDepartureCreation(departure)
-
-        Logger.createLogEntry("fetched station with id {}".format(stop_id))
-
-    def __persistDepartureCreation(self, departure: Departure):
-        command = """
-            INSERT INTO departure (id, line, direction, realTime, scheduledTime, station)
-            VALUES ({}, '{}', '{}', '{}', '{}', {})
-        """.format(departure.id, departure.line, departure.direction, departure.realTime,
-                   departure.scheduledTime, departure.stop_id)
-
-        self.sql_helper.execute(command)
-
-    def __persistDepartureUpdate(self, departure: Departure):
-        self.sql_helper.execute("""
-                    UPDATE departure SET scheduledTime = '{}' WHERE id = {}
-                """.format(departure.scheduledTime, departure.id))
+def makeString(arg):
+    return "'" + str(arg) + "'"
 
 
 def isValidDepartureJson(departure_json):
@@ -51,3 +17,27 @@ def isValidDepartureJson(departure_json):
             pass
 
     return is_valid
+
+
+def createOrUpdateDepartures(json, stop_id):
+    for departureJson in json['Departures']:
+
+        if not isValidDepartureJson(departureJson):
+            Logger.createLogEntry('JSON: {} \n is not valid'.format(departureJson))
+            continue
+
+        departure = Departure(departureJson, stop_id)
+        result = SqlHelper.execute('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
+
+        if result[0][0] == 0:
+            SqlHelper.create("departure",
+                             ["id", "line", "direction", "realTime", "scheduledTime", "station"],
+                             [departure.id, makeString(departure.line), makeString(departure.direction),
+                              makeString(departure.realTime), makeString(departure.scheduledTime),
+                              makeString(departure.stop_id)])
+        else:
+            SqlHelper.update("departure",
+                             {'scheduledTime': makeString(departure.scheduledTime)},
+                             "id = {}".format(departure.id))
+
+    Logger.createLogEntry("fetched station with id {}".format(stop_id))
