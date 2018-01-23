@@ -1,34 +1,37 @@
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from threading import Thread
 
 import time
 import json
 
 from src import DepartureManager, Logger
 
-
 stop_ids = [33000005, 33000007, 33000028, 33000115, 33000727]
 
-
-def fetchStation(stop_id):
-    url = 'https://webapi.vvo-online.de/dm'
-    post_fields = {'stopid': stop_id, 'limit': 10, 'mot': '[Tram, CityBus]'}
-
-    request = Request(url, urlencode(post_fields).encode())
-
-    try:
-        response = urlopen(request).read().decode()
-    except:
-        Logger.createLogEntry("could not connect to the API")
-        return
-
-    parsed_response = json.loads(response)
-    DepartureManager.createOrUpdateDepartures(parsed_response, stop_id)
+url = 'https://webapi.vvo-online.de/dm'
+post_fields = {'limit': 10, 'mot': '[Tram, CityBus]'}
 
 
-def run():
+def makeRequest(stop_id):
     while True:
-        for station_id in stop_ids:
-            fetchStation(station_id)
+        post_fields['stopid'] = stop_id
+        request = Request(url, urlencode(post_fields).encode())
+
+        try:
+            response = urlopen(request).read().decode()
+        except Exception:
+            Logger.createLogEntry("could not connect to the API")
+            return
+
+        parsed_response = json.loads(response)
+        DepartureManager.createOrUpdateDepartures(parsed_response, stop_id)
 
         time.sleep(60)
+
+
+# create a new thread for every stop to fetch the data.
+def run():
+    for stop_id in stop_ids:
+        thread = Thread(target=makeRequest, args=[stop_id])
+        thread.start()
