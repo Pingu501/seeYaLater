@@ -19,13 +19,15 @@ frequently for all departures in Dresden.
 
 | Station | ID |
 | :-------- | ---- |
+| Pirnaischer Platz | 33000005 |
+| Straßburger Platz | 33000007 |
 | HBF | 33000028 |
 | Wasaplatz | 33000115 |
-| Straßburger Platz | 33000007 |
+| Technische Universität (Fritz-Foerster-Platz) | 33000727 |
 
 ## Running this project in background
 
-To run this in background use `nohup`. This will also survice ssh hangups.
+To run this in background use `nohup`. This will also survive ssh hangups.
 
 ```
 nohup python3.6 main.py

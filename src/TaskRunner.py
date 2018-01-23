@@ -7,12 +7,12 @@ import json
 from src import DepartureManager, Logger
 
 
-stop_ids = [33000028, 33000115, 33000007]
+stop_ids = [33000005, 33000007, 33000028, 33000115, 33000727]
 
 
-def fetchStation(station_id):
+def fetchStation(stop_id):
     url = 'https://webapi.vvo-online.de/dm'
-    post_fields = {'stopid': station_id, 'limit': 10, 'mot': '[Tram, CityBus]'}
+    post_fields = {'stopid': stop_id, 'limit': 10, 'mot': '[Tram, CityBus]'}
 
     request = Request(url, urlencode(post_fields).encode())
 
@@ -23,7 +23,7 @@ def fetchStation(station_id):
         return
 
     parsed_response = json.loads(response)
-    DepartureManager.createOrUpdateDepartures(parsed_response, station_id)
+    DepartureManager.createOrUpdateDepartures(parsed_response, stop_id)
 
 
 def run():
