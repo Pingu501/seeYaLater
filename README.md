@@ -1,19 +1,17 @@
 # SeeYaLater
 
+This project is not about flaming bus drivers!
+
 Some bus lines in Dresden seem to be always late ...
 and nobody has the time to proof this right.
 
 But for this we invented computer! ;)
 
-Little Python Script running in the background asking the API of the DVB 
+Small **Python3** Script running in the background asking the API of the DVB 
 frequently for all departures in Dresden.
 
+
 [API documentation](https://github.com/kiliankoe/vvo/blob/master/documentation/webapi.md)
-
-## Requirements
-
-- Python 3
-- SQL to store the departure date
 
 ## Stations 
 
@@ -27,8 +25,9 @@ frequently for all departures in Dresden.
 
 ## Running this project in background
 
-To run this in background use `nohup`. This will also survive ssh hangups.
+To run this in background use `nohup`. This will also survive ssh hangups. Make sure to run this command
+always from the same directory. Otherwise you will end up with more than one database.
 
 ```
-nohup python3.6 main.py
+nohup python3.6 main.py &
 ```

@@ -5,7 +5,7 @@ from threading import Thread
 import time
 import json
 
-from src import DepartureManager, Logger
+from src import DepartureManager, Logger, DataProvider
 
 stop_ids = [33000005, 33000007, 33000028, 33000115, 33000727]
 
@@ -27,6 +27,7 @@ def makeRequest(stop_id):
         parsed_response = json.loads(response)
         DepartureManager.createOrUpdateDepartures(parsed_response, stop_id)
 
+        DataProvider.setLastRunToNow()
         time.sleep(60)
 
 

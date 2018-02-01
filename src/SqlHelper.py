@@ -70,3 +70,37 @@ def update(table_name, keys_and_values, where):
     queryString += __dictToString(keys_and_values)
     queryString += "WHERE {}".format(where)
     return execute(queryString)
+
+
+def select(entity_name, parameters, where_statements, order_by=None, order=None, limit=None):
+    """
+
+    :param entity_name: the table name to perform
+    :param parameters: to fetch
+    :param where_statements: Array of Array containing parameter, operator and value
+    :param order_by: property to sort by
+    :param order: str ASC|DESC
+    :param limit: max number of results
+    :return: query result
+    """
+
+    queryString = 'SELECT ' + parameters + ' FROM ' + entity_name
+
+    count = 0
+    for where_statement in where_statements:
+        queryString += ' WHERE ' if count == 0 else ' AND '
+        queryString += ' '.join(where_statement)
+        count += 1
+
+    if order_by is not None and order is not None:
+        queryString += ' ORDER BY ' + order_by + ' ' + order
+
+    if limit is not None:
+        queryString += ' LIMIT ' + limit
+
+    return execute(queryString)
+
+
+def count(property_to_count):
+    queryString = "SELECT COUNT(id) FROM " + property_to_count
+    return execute(queryString)[0][0]

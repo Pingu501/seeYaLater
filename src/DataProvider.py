@@ -1,21 +1,32 @@
+from datetime import datetime
 import json
 
 from src import SqlHelper
 
 departureKeys = ['id', 'line', 'direction', 'realTime', 'scheduledTime', 'station']
+lastRun = datetime.now()
+
+
+def setLastRunToNow():
+    global lastRun
+    lastRun = datetime.now()
+
+
+def getCurrentStatus():
+    numberOfEntries = SqlHelper.count('departure')
+    return '{"totalCount": ' + str(numberOfEntries) + ', "lastRun": ' + str(lastRun) + '}'
 
 
 def getAllDepartures():
-    return __queryRunner('SELECT * FROM departure')
+    return __jsonCreator(SqlHelper.select('departure', '*', []), departureKeys)
 
 
 def getAllDeparturesByStation(station_id):
-    return __queryRunner('SELECT * FROM departure WHERE station = {}'.format(station_id))
+    return __jsonCreator(SqlHelper.select('departure', '*', [['station', '=', station_id]]), departureKeys)
 
 
 def __queryRunner(query):
-    sqlHelper = SqlHelper()
-    result = sqlHelper.execute(query)
+    result = SqlHelper.execute(query)
     return __jsonCreator(result, departureKeys)
 
 

@@ -10,9 +10,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         departure_pattern = re.compile('([\/]?api\/departures[\/]?)(\d*)')
         departure_match = departure_pattern.match(self.path)
 
-        if departure_match:
+        if self.path == '/api/status':
+            self.__responseWithJson(DataProvider.getCurrentStatus())
+        elif departure_match:
             stationId = departure_match.group(2)
-            print(stationId)
 
             if stationId == '':
                 response = DataProvider.getAllDepartures()
