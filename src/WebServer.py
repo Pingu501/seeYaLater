@@ -10,7 +10,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         departure_pattern = re.compile('([\/]?api\/departures[\/]?)(\d*)')
         departure_match = departure_pattern.match(self.path)
 
-        if self.path == '/api/status':
+        if self.path == '/api':
+            self.__printRoutes__()
+        elif self.path == '/api/status':
             self.__responseWithJson(DataProvider.getCurrentStatus())
         elif departure_match:
             stationId = departure_match.group(2)
@@ -24,13 +26,27 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         else:
             self.__printDefaultPage()
 
-    def __printDefaultPage(self):
+    def __printRoutes__(self):
         self.send_response(200)
 
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        message = 'you opened {}'.format('default page')
+        message = '<h1>API</h1>'
+        message += '/api - this page <br/>'
+        message += '/api/status - current system status <br/>'
+        message += '/api/departures - all fetched departures <br/>'
+        message += '/api/departures/STATION_ID - all fetched departures by station <br/>'
+
+        self.wfile.write(bytes(message, "utf8"))
+
+    def __printDefaultPage(self):
+        self.send_response(404)
+
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+        message = '<h1>path not found</h1> go to <a href="/api">/api</a> for a list of all routes'
         self.wfile.write(bytes(message, "utf8"))
         return
 
