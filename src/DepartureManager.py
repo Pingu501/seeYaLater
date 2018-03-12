@@ -1,3 +1,5 @@
+import datetime
+
 from src import Departure, Logger, SqlHelper
 
 
@@ -21,6 +23,9 @@ def __isValidDepartureJson(departure_json):
 
 
 def createOrUpdateDepartures(json, stop_id):
+    # add 1 day to now as default value
+    nearestDeparture = datetime.datetime.now() + datetime.timedelta(1)
+
     for departureJson in json['Departures']:
 
         if not __isValidDepartureJson(departureJson):
@@ -28,6 +33,10 @@ def createOrUpdateDepartures(json, stop_id):
             continue
 
         departure = Departure(departureJson, stop_id)
+
+        if departure.realTime < nearestDeparture:
+            nearestDeparture = departure.realTime
+
         result = SqlHelper.execute('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
 
         if result[0][0] == 0:
@@ -42,3 +51,4 @@ def createOrUpdateDepartures(json, stop_id):
                              "id = {}".format(departure.id))
 
     Logger.createLogEntry("fetched station with id {}".format(stop_id))
+    return nearestDeparture
