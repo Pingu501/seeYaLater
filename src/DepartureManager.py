@@ -50,5 +50,4 @@ def createOrUpdateDepartures(json, stop_id):
                              {'scheduledTime': makeString(departure.scheduledTime)},
                              "id = {}".format(departure.id))
 
-    Logger.createLogEntry("fetched station with id {}".format(stop_id))
     return nearestDeparture
