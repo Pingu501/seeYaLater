@@ -1,14 +1,10 @@
 import datetime
 
-
 import time
 import threading
 
 from src import DepartureManager, DataProvider
 from src.Helper import RequestHelper
-
-known_stops = [33000005, 33000007, 33000028, 33000115, 33000727]
-
 
 # It is not always necessary to fetch data every minute
 # e.g. in the middle of the night
@@ -37,7 +33,7 @@ def makeRequest(stop_id):
 def run():
     # init fetching map
     now = datetime.datetime.now()
-    for stop_id in known_stops:
+    for stop_id in nextFetchMap:
         nextFetchMap[stop_id] = now
 
     while 1:
