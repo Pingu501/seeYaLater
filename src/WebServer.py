@@ -1,7 +1,8 @@
 import re
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from src import DataProvider, Logger
+from src import DataProvider
+from src.Helper import Logger
 
 
 class WebRequestHandler(BaseHTTPRequestHandler):

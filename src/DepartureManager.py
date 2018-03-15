@@ -1,6 +1,7 @@
 import datetime
 
-from src import Departure, Logger, SqlHelper
+from src import Departure
+from src.Helper import Logger, SqlHelper
 
 
 def makeString(arg):

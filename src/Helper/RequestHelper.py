@@ -3,7 +3,7 @@ from urllib.request import Request, urlopen
 
 import json
 
-from src import Logger
+from src.Helper import Logger
 
 
 def synchronousApiRequest(url, post_fields):

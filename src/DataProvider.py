@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 
-from src import SqlHelper
+from src.Helper import SqlHelper
 
 departureKeys = ['id', 'line', 'direction', 'realTime', 'scheduledTime', 'station']
 lastRun = datetime.now()
