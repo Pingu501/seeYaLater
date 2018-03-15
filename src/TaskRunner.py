@@ -1,12 +1,10 @@
 import datetime
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+
 
 import time
-import json
 import threading
 
-from src import DepartureManager, Logger, DataProvider
+from src import DepartureManager, DataProvider, RequestHelper
 
 stop_ids = [33000005, 33000007, 33000028, 33000115, 33000727]
 
@@ -25,16 +23,10 @@ post_fields = {'limit': 10, 'mot': '[Tram, CityBus]'}
 
 def makeRequest(stop_id):
     post_fields['stopid'] = stop_id
-    request = Request(url, urlencode(post_fields).encode())
 
-    try:
-        response = urlopen(request).read().decode()
-    except Exception:
-        Logger.createLogEntry("could not connect to the API")
-        return
+    response = RequestHelper.synchronousApiRequest(url, post_fields)
 
-    parsed_response = json.loads(response)
-    nextFetchForStation = DepartureManager.createOrUpdateDepartures(parsed_response, stop_id)
+    nextFetchForStation = DepartureManager.createOrUpdateDepartures(response, stop_id)
     nextFetchMap[stop_id] = nextFetchForStation
 
     DataProvider.setLastRunToNow()
