@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import sys
 import time
@@ -37,10 +37,13 @@ def __fetchAllStopsFromAllLines__():
 
 
 def __fetchStopsFromLine__(trip_id, stop_id):
-    timeString = '/Date({}000+0100)/'.format(round(time.time()))
-    post_fields = {'tripId': trip_id, 'stopId': 33000007, 'time': timeString}
+    utc_dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    post_fields = {'tripId': trip_id, 'stopId': stop_id, 'time': utc_dt}
 
     response = RequestHelper.synchronousApiRequest(url_trip, post_fields)
+
+    if not response:
+        return
 
     stopIds = []
     for stop in response['Stops']:
