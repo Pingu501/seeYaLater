@@ -4,7 +4,7 @@ import time
 import threading
 
 from src import DepartureManager, DataProvider
-from src.Helper import RequestHelper
+from src.Helper import RequestHelper, Logger
 
 # It is not always necessary to fetch data every minute
 # e.g. in the middle of the night
@@ -31,6 +31,7 @@ def makeRequest(stop_id):
 
 # create a new thread for every stop to fetch the data.
 def run():
+    Logger.createLogEntry('Going to fetch data from {} stops'.format(len(nextFetchMap)))
     # init fetching map
     now = datetime.datetime.now()
     for stop_id in nextFetchMap:

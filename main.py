@@ -5,11 +5,7 @@ import sys
 from src import TaskRunner, StopFetcher
 from src import WebServer
 
-
-for arg in sys.argv:
-    print(arg)
-
-StopFetcher.fetchAllStopsFromLine()
+StopFetcher.initStops()
 
 minerThread = Thread(target=TaskRunner.run)
 minerThread.start()

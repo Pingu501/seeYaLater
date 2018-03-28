@@ -13,7 +13,9 @@ frequently for all departures in Dresden.
 
 [API documentation](https://github.com/kiliankoe/vvo/blob/master/documentation/webapi.md)
 
-## Stations 
+## Options
+
+By default one the following stations are checked
 
 | Station | ID |
 | :-------- | ---- |
@@ -22,6 +24,12 @@ frequently for all departures in Dresden.
 | HBF | 33000028 |
 | Wasaplatz | 33000115 |
 | Technische Universität (Fritz-Foerster-Platz) | 33000727 |
+| Schillerplatz | 33000052 |
+| Lenneplatz | 33000111 |
+| Helmholtzstraße | 33000742 |
+
+
+Use `--all` to fetch nearly all stations in Dresden
 
 ## Running this project in background
 
