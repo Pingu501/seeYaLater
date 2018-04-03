@@ -1,7 +1,8 @@
 import datetime
 
 from src import Departure
-from src.Helper import Logger, SqlHelper
+from src.Helper import Logger
+from src.SqlWorker import SqlWorker
 
 
 def makeString(arg):
@@ -23,7 +24,13 @@ def __isValidDepartureJson(departure_json):
     return is_valid
 
 
-def createOrUpdateDepartures(json, stop_id):
+def createOrUpdateDepartures(json, stop_id, sql_worker):
+    """
+
+    :param json: string
+    :param stop_id: string
+    :type sql_worker: SqlWorker
+    """
     # add 1 day to now as default value
     nearestDeparture = datetime.datetime.now() + datetime.timedelta(1)
 
@@ -38,17 +45,20 @@ def createOrUpdateDepartures(json, stop_id):
         if departure.realTime < nearestDeparture:
             nearestDeparture = departure.realTime
 
-        result = SqlHelper.execute('SELECT COUNT(id) FROM departure WHERE id = ' + departure.id)
-
+        result = sql_worker.onThread(sql_worker.execute,
+                                     ["SELECT COUNT(id) FROM departure WHERE id = {}".format(departure.id)])
         if result[0][0] == 0:
-            SqlHelper.create("departure",
-                             ["id", "line", "direction", "realTime", "scheduledTime", "station"],
-                             [departure.id, makeString(departure.line), makeString(departure.direction),
-                              makeString(departure.realTime), makeString(departure.scheduledTime),
-                              makeString(departure.stop_id)])
+            sql_worker.onThread(sql_worker.create, ["departure",
+                                                    ["id", "line", "direction", "realTime", "scheduledTime", "station"],
+                                                    [departure.id, makeString(departure.line),
+                                                     makeString(departure.direction),
+                                                     makeString(departure.realTime),
+                                                     makeString(departure.scheduledTime),
+                                                     makeString(departure.stop_id)]
+                                                    ])
         else:
-            SqlHelper.update("departure",
-                             {'scheduledTime': makeString(departure.scheduledTime)},
-                             "id = {}".format(departure.id))
+            sql_worker.onThread(sql_worker.update, ("departure",
+                                                    {'scheduledTime': makeString(departure.scheduledTime)},
+                                                    "id = {}".format(departure.id)))
 
     return nearestDeparture

@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
 import sys
-import time
 
 from src import TaskRunner
 from src.Helper import RequestHelper
@@ -9,7 +8,7 @@ from src.Helper import RequestHelper
 url_departures = 'https://webapi.vvo-online.de/dm'
 url_trip = 'https://webapi.vvo-online.de/dm/trip'
 
-initial_known_stops = [33000005, 33000007, 33000028, 33000115, 33000727, 33000052, 33000111, 33000742]
+initial_known_stops = [33000005]
 
 known_lines = {}
 
