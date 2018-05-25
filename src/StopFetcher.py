@@ -3,27 +3,30 @@ from datetime import datetime, timezone
 import sys
 
 from src import TaskRunner
-from src.Helper import RequestHelper
+from src.Helper import RequestHelper, Logger
 
 url_departures = 'https://webapi.vvo-online.de/dm'
 url_trip = 'https://webapi.vvo-online.de/dm/trip'
 
-initial_known_stops = [33000005]
+initial_known_stops = [33000005, 33000007, 33000028, 33000115, 33000727, 33000052, 33000111, 33000742]
 
 known_lines = {}
 
 
 def initStops():
     if sys.argv.count('--all'):
+        Logger.createLogEntry('Start fetching all stops')
         __fetchAllLinesFromAllStop__()
         __fetchAllStopsFromAllLines__()
     else:
+        Logger.createLogEntry('Add {} initial stops to fetch list'.format(len(initial_known_stops)))
         __addStopArrayToFetchList__(initial_known_stops)
 
 
 def __fetchAllLinesFromAllStop__():
     for stop_id in initial_known_stops:
-        response = RequestHelper.synchronousApiRequest(url_departures, {'stopid': stop_id, 'mot': '[Tram, CityBus]', 'limit': 10})
+        response = RequestHelper.synchronousApiRequest(url_departures,
+                                                       {'stopid': stop_id, 'mot': '[Tram, CityBus]', 'limit': 20})
 
         for departure in response['Departures']:
             known_lines[departure['LineName']] = {'tripId': int(departure['Id']), 'stopId': int(stop_id)}

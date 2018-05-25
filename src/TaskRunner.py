@@ -17,7 +17,7 @@ from src.Helper import RequestHelper, Logger
 nextFetchMap = {}
 
 url = 'https://webapi.vvo-online.de/dm'
-post_fields = {'limit': 10, 'mot': '[Tram, CityBus]'}
+post_fields = {'limit': 20, 'mot': '[Tram, CityBus]'}
 
 
 def makeRequest(stop_id, sql_worker):
@@ -27,8 +27,6 @@ def makeRequest(stop_id, sql_worker):
 
     nextFetchForStation = DepartureManager.createOrUpdateDepartures(response, stop_id, sql_worker)
     nextFetchMap[stop_id] = nextFetchForStation
-
-    DataProvider.setLastRunToNow()
 
 
 # create a new thread for every stop to fetch the data.
@@ -45,4 +43,5 @@ def run(sql_worker):
             if nextCheck <= now:
                 thread = threading.Thread(target=makeRequest, args=[stop_id, sql_worker])
                 thread.start()
+        DataProvider.setLastRunToNow()
         time.sleep(60)

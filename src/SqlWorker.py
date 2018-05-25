@@ -3,6 +3,10 @@ import threading
 import time
 
 
+def makeString(arg):
+    return "'" + str(arg) + "'"
+
+
 class SqlWorker(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -12,7 +16,7 @@ class SqlWorker(threading.Thread):
     def __prepareDatabase__(self):
         self.execute("""
                     CREATE TABLE IF NOT EXISTS departure (
-                    id INT NOT NULL PRIMARY KEY,
+                    id INT NOT NULL,
                     line VARCHAR(4),
                     direction VARCHAR(42),
                     realTime DATETIME,
@@ -25,7 +29,6 @@ class SqlWorker(threading.Thread):
         job = SqlJob(function_to_call, args)
         self.q.append(job)
         return_value = job.fetchResult()
-        self.q.remove(job)
         return return_value
 
     def run(self):
@@ -36,8 +39,27 @@ class SqlWorker(threading.Thread):
                 function_to_call, arguments = job.getFunctionAndParameters()
                 return_value = function_to_call(*arguments)
                 job.updateStatus(return_value)
+                self.q.remove(job)
 
-            pass
+            time.sleep(0.001)
+
+    def createOrUpdate(self, departure):
+        """
+        :param departure: Departure
+        :return: void
+        """
+        result = self.execute(
+            "SELECT COUNT(id) FROM departure WHERE id = '{}' and station = {}".format(departure.id, departure.stop_id))
+
+        if result[0][0] == 0:
+            self.create("departure", ["id", "line", "direction", "realTime", "scheduledTime", "station"],
+                        [departure.id, makeString(departure.line), makeString(departure.direction),
+                         makeString(departure.realTime),
+                         makeString(departure.scheduledTime),
+                         makeString(departure.stop_id)])
+        else:
+            self.update("departure", {'scheduledTime': makeString(departure.scheduledTime)},
+                        'id = {} and station = {}'.format(departure.id, departure.stop_id))
 
     def create(self, table_name, keys, values):
         queryString = "INSERT INTO {}".format(table_name)
@@ -90,6 +112,10 @@ class SqlWorker(threading.Thread):
         try:
             cursor.execute(query)
         except sqlite3.IntegrityError as e:
+            print(query)
+            print(e)
+        except Exception as e:
+            print(query)
             print(e)
 
         result = cursor.fetchall()
@@ -132,9 +158,12 @@ class SqlJob:
         self.executed = True
         self.return_value = return_value
 
+    def finished(self):
+        return self.executed
+
     def fetchResult(self):
         while True:
             if self.executed:
                 return self.return_value
             else:
-                time.sleep(0.001)
+                time.sleep(0.01)

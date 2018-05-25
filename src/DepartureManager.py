@@ -45,20 +45,6 @@ def createOrUpdateDepartures(json, stop_id, sql_worker):
         if departure.realTime < nearestDeparture:
             nearestDeparture = departure.realTime
 
-        result = sql_worker.onThread(sql_worker.execute,
-                                     ["SELECT COUNT(id) FROM departure WHERE id = {}".format(departure.id)])
-        if result[0][0] == 0:
-            sql_worker.onThread(sql_worker.create, ["departure",
-                                                    ["id", "line", "direction", "realTime", "scheduledTime", "station"],
-                                                    [departure.id, makeString(departure.line),
-                                                     makeString(departure.direction),
-                                                     makeString(departure.realTime),
-                                                     makeString(departure.scheduledTime),
-                                                     makeString(departure.stop_id)]
-                                                    ])
-        else:
-            sql_worker.onThread(sql_worker.update, ("departure",
-                                                    {'scheduledTime': makeString(departure.scheduledTime)},
-                                                    "id = {}".format(departure.id)))
+        sql_worker.onThread(sql_worker.createOrUpdate, [departure])
 
     return nearestDeparture
