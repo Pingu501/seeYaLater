@@ -23,5 +23,6 @@ class Departure:
 
 
 def parseDateStringToDate(date_string: str):
-    prepared_string = date_string.replace('/Date(', '').replace('+0100)/', '').replace('+0200)/', '')
+    prepared_string = date_string.replace('/Date(', '').replace('+0100)/', '').replace('+0200)/', '').replace('-0000)/',
+                                                                                                              '')
     return datetime.datetime.fromtimestamp(int(prepared_string) / 1000)

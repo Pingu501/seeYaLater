@@ -41,7 +41,8 @@ class SqlWorker(threading.Thread):
                 job.updateStatus(return_value)
                 self.q.remove(job)
 
-            time.sleep(0.001)
+            if len(self.q) == 0:
+                time.sleep(1)
 
     def createOrUpdate(self, departure):
         """
