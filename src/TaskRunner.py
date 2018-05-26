@@ -29,7 +29,7 @@ def makeRequest(stop_id, sql_worker):
 
 def lineFetcher(line_id, sql_worker):
     stops = StopFetcher.known_lines_with_stops[line_id]['stops']
-    # add 1 day to know to make sure this gets overwritten
+    # add 1 day to make sure this gets overwritten
     next_fetch = datetime.datetime.now() + datetime.timedelta(1)
     while 1:
         for stop_id in stops:
@@ -49,15 +49,15 @@ def lineFetcher(line_id, sql_worker):
         if sleep_time > 60 * 60:
             sleep_time = 60 * 60
 
-        Logger.createLogEntry('Line {} finished fetching \n going to sleep for {} seconds'.format(line_id, sleep_time))
+        Logger.verbose('Line {} finished fetching \n going to sleep for {} seconds'.format(line_id, sleep_time))
         time.sleep(sleep_time)
 
 
 # create a new thread for every line which fetches all stops
 def run(sql_worker):
     Logger.createLogEntry(
-        'Going to fetch data from {} lines containing {} stops'.format(len(StopFetcher.known_lines_with_stops),
-                                                                       len(StopFetcher.known_stops)))
+        'Going to fetch data from {} lines serving {} stops'.format(len(StopFetcher.known_lines_with_stops),
+                                                                    len(StopFetcher.known_stops)))
     for line_id in StopFetcher.known_lines_with_stops:
         line = StopFetcher.known_lines_with_stops[line_id]
         if len(line['stops']) > 0:

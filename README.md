@@ -17,23 +17,23 @@ frequently for all departures in Dresden.
 
 By default one the following stations are checked
 
-| Station | ID |
-| :-------- | ---- |
-| Pirnaischer Platz | 33000005 |
-| Straßburger Platz | 33000007 |
-| HBF | 33000028 |
-| Wasaplatz | 33000115 |
+| Station                                       | ID |
+| :--------                                     | ---- |
+| Pirnaischer Platz                             | 33000005 |
+| Straßburger Platz                             | 33000007 |
+| HBF                                           | 33000028 |
+| Wasaplatz                                     | 33000115 |
 | Technische Universität (Fritz-Foerster-Platz) | 33000727 |
-| Schillerplatz | 33000052 |
-| Lenneplatz | 33000111 |
-| Helmholtzstraße | 33000742 |
+| Schillerplatz                                 | 33000052 |
+| Lenneplatz                                    | 33000111 |
+| Helmholtzstraße                               | 33000742 |
 
 
 Use `--all` to fetch nearly all stations in Dresden
 
 ## Running this project in background
 
-To run this in background use `nohup`. This will also survive ssh hangups. Make sure to run this command
+To run this in background use `nohup`. This will survive ssh hangups. Make sure to run this command
 always from the same directory. Otherwise you will end up with more than one database.
 
 ```

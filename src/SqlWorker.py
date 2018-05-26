@@ -2,6 +2,8 @@ import sqlite3
 import threading
 import time
 
+from src.Helper import Logger
+
 
 def makeString(arg):
     return "'" + str(arg) + "'"
@@ -41,6 +43,7 @@ class SqlWorker(threading.Thread):
                 job.updateStatus(return_value)
                 self.q.remove(job)
 
+            Logger.verbose('SQL Worker has {} queue entries'.format(len(self.q)))
             if len(self.q) == 0:
                 time.sleep(1)
 
