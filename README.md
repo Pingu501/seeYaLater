@@ -15,18 +15,18 @@ frequently for all departures in Dresden.
 
 ## Options
 
-By default one the following stations are checked
+By default the following stations are checked
 
-| Station                                       | ID |
-| :--------                                     | ---- |
-| Pirnaischer Platz                             | 33000005 |
-| Straßburger Platz                             | 33000007 |
-| HBF                                           | 33000028 |
-| Wasaplatz                                     | 33000115 |
-| Technische Universität (Fritz-Foerster-Platz) | 33000727 |
-| Schillerplatz                                 | 33000052 |
-| Lenneplatz                                    | 33000111 |
-| Helmholtzstraße                               | 33000742 |
+| ID       | Station Name|
+| :--------| ---- |
+| 33000005 | Pirnaischer Platz | 
+| 33000007 | Straßburger Platz |
+| 33000028 | HBF |
+| 33000115 | Wasaplatz |
+| 33000727 | Technische Universität (Fritz-Foerster-Platz) |
+| 33000052 | Schillerplatz |
+| 33000111 | Lenneplatz |
+| 33000742 | Helmholtzstraße |
 
 
 Use `--all` to fetch nearly all stations in Dresden
@@ -39,3 +39,10 @@ always from the same directory. Otherwise you will end up with more than one dat
 ```
 nohup python3.6 main.py &
 ```
+
+## TODOs
+
+- some kind of UI for users to use the data (React?)
+- analyse the data
+- use weather information
+- maybe machine learning could be used here?
