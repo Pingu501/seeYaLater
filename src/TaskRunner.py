@@ -2,10 +2,13 @@ import datetime
 
 import time
 import threading
+import logging
 
 from src import DepartureManager, DataProvider, StopFetcher
 
-from src.Helper import RequestHelper, Logger
+from src.Helper import RequestHelper
+
+logger = logging.getLogger()
 
 # It is not always necessary to fetch data every minute
 # e.g. in the middle of the night
@@ -46,16 +49,17 @@ def lineFetcher(line_id, sql_worker):
         if sleep_time < 60:
             sleep_time = 60
         # wait not longer then one hour
-        if sleep_time > 60 * 60:
+        elif sleep_time > 60 * 60:
             sleep_time = 60 * 60
 
-        Logger.verbose('Line {} finished fetching \n going to sleep for {} seconds'.format(line_id, sleep_time))
+        logger.log(20, 'Line {} finished fetching \n going to sleep for {} seconds'.format(line_id, sleep_time))
         time.sleep(sleep_time)
 
 
 # create a new thread for every line which fetches all stops
 def run(sql_worker):
-    Logger.createLogEntry(
+    logger.log(
+        logging.INFO,
         'Going to fetch data from {} lines serving {} stops'.format(len(StopFetcher.known_lines_with_stops),
                                                                     len(StopFetcher.known_stops)))
     for line_id in StopFetcher.known_lines_with_stops:

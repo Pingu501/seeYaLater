@@ -1,8 +1,10 @@
 import re
+import logging
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from src import DataProvider
-from src.Helper import Logger
+
+logger = logging.getLogger()
 
 
 class WebRequestHandler(BaseHTTPRequestHandler):
@@ -63,7 +65,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
 def start():
     server_address = ('127.0.0.1', 8081)
-    Logger.createLogEntry('starting web server at 127.0.0.1:8081')
+    logger.log(logging.INFO, 'starting web server at 127.0.0.1:8081')
     try:
         httpd = HTTPServer(server_address, WebRequestHandler)
         httpd.serve_forever()

@@ -1,9 +1,11 @@
 import datetime
+import logging
 
 from src import Departure
-from src.Helper import Logger
 from src.SqlWorker import SqlWorker
 
+
+logger = logging.getLogger()
 
 def makeString(arg):
     return "'" + str(arg) + "'"
@@ -37,7 +39,7 @@ def createOrUpdateDepartures(json, stop_id, sql_worker):
     for departureJson in json['Departures']:
 
         if not __isValidDepartureJson(departureJson):
-            Logger.createLogEntry('JSON: {} \n is not valid'.format(departureJson))
+            logger.log(logging.WARNING, 'JSON: {} \n is not valid'.format(departureJson))
             continue
 
         departure = Departure(departureJson, stop_id)

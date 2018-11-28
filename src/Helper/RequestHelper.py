@@ -2,8 +2,9 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 import json
+import logging
 
-from src.Helper import Logger
+logger = logging.getLogger()
 
 
 def synchronousApiRequest(url, post_fields):
@@ -12,7 +13,7 @@ def synchronousApiRequest(url, post_fields):
     try:
         response = urlopen(request).read().decode()
     except Exception:
-        Logger.createLogEntry("could not connect to the API")
+        logger.error("could not connect to the API")
         return None
 
     return json.loads(response)

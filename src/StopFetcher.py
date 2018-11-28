@@ -1,8 +1,11 @@
 from datetime import datetime, timezone
 
 import sys
+import logging
 
-from src.Helper import RequestHelper, Logger
+from src.Helper import RequestHelper
+
+logger = logging.getLogger()
 
 url_departures = 'https://webapi.vvo-online.de/dm'
 url_trip = 'https://webapi.vvo-online.de/dm/trip'
@@ -15,11 +18,11 @@ known_stops = []
 
 def initStops():
     if sys.argv.count('--all'):
-        Logger.createLogEntry('Start fetching all stops')
+        logger.log(logging.INFO, 'Start fetching all stops')
         __fetchAllLinesFromInitialStops__()
         __fetchAllStopsFromAllLines__()
     else:
-        Logger.createLogEntry('Add {} initial stops to fetch list'.format(len(initial_known_stops)))
+        logger.log(logging.INFO, 'Add {} initial stops to fetch list'.format(len(initial_known_stops)))
         __createFetchMapForInitialStops__()
 
 
@@ -68,4 +71,3 @@ def __fetchStopsFromLine__(trip_id, stop_id):
             known_stops.append(stop_id)
 
     return stopIds
-
