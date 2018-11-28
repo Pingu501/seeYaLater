@@ -52,16 +52,14 @@ def lineFetcher(line_id, sql_worker):
         elif sleep_time > 60 * 60:
             sleep_time = 60 * 60
 
-        logger.log(20, 'Line {} finished fetching \n going to sleep for {} seconds'.format(line_id, sleep_time))
+        logger.info('Line {} finished fetching \n going to sleep for {} seconds'.format(line_id, sleep_time))
         time.sleep(sleep_time)
 
 
 # create a new thread for every line which fetches all stops
 def run(sql_worker):
-    logger.log(
-        logging.INFO,
-        'Going to fetch data from {} lines serving {} stops'.format(len(StopFetcher.known_lines_with_stops),
-                                                                    len(StopFetcher.known_stops)))
+    logger.info('Going to fetch data from {} lines serving {} stops'.format(len(StopFetcher.known_lines_with_stops),
+                                                                            len(StopFetcher.known_stops)))
     for line_id in StopFetcher.known_lines_with_stops:
         line = StopFetcher.known_lines_with_stops[line_id]
         if len(line['stops']) > 0:

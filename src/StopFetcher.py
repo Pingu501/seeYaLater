@@ -18,11 +18,11 @@ known_stops = []
 
 def initStops():
     if sys.argv.count('--all'):
-        logger.log(logging.INFO, 'Start fetching all stops')
+        logger.info('Start fetching all stops')
         __fetchAllLinesFromInitialStops__()
         __fetchAllStopsFromAllLines__()
     else:
-        logger.log(logging.INFO, 'Add {} initial stops to fetch list'.format(len(initial_known_stops)))
+        logger.info('Add {} initial stops to fetch list'.format(len(initial_known_stops)))
         __createFetchMapForInitialStops__()
 
 
@@ -41,7 +41,9 @@ def __createFetchMapForInitialStops__():
 def __fetchAllLinesFromInitialStops__():
     for stop_id in initial_known_stops:
         response = RequestHelper.synchronousApiRequest(url_departures,
-                                                       {'stopid': stop_id, 'mot': '[Tram, CityBus]', 'limit': 20})
+                                                   {'stopid': stop_id, 'mot': '[Tram, CityBus]', 'limit': 20})
+        if response is None:
+            sys.exit(1)
 
         for departure in response['Departures']:
             known_lines_with_stops[departure['LineName']] = {'tripId': int(departure['Id']), 'stopId': int(stop_id)}

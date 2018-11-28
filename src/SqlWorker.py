@@ -43,7 +43,7 @@ class SqlWorker(threading.Thread):
                 job.updateStatus(return_value)
                 self.q.remove(job)
 
-            logger.log(logging.INFO, 'SQL Worker has {} queue entries'.format(len(self.q)))
+            logger.debug('SQL Worker has {} queue entries'.format(len(self.q)))
             if len(self.q) == 0:
                 time.sleep(1)
 
@@ -119,8 +119,7 @@ class SqlWorker(threading.Thread):
             print(query)
             print(e)
         except Exception as e:
-            print(query)
-            print(e)
+            logger.warning(str(e) + '=>' + query)
 
         result = cursor.fetchall()
 

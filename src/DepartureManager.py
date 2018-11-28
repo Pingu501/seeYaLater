@@ -39,7 +39,7 @@ def createOrUpdateDepartures(json, stop_id, sql_worker):
     for departureJson in json['Departures']:
 
         if not __isValidDepartureJson(departureJson):
-            logger.log(logging.WARNING, 'JSON: {} \n is not valid'.format(departureJson))
+            logger.warning('JSON: {} \n is not valid'.format(departureJson))
             continue
 
         departure = Departure(departureJson, stop_id)

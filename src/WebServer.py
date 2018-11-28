@@ -68,9 +68,9 @@ def start(data_provider_instance):
     data_provider = data_provider_instance
 
     server_address = ('127.0.0.1', 8081)
-    logger.log(logging.INFO, 'starting web server at 127.0.0.1:8081')
+    logger.info('starting web server at 127.0.0.1:8081')
     try:
         httpd = HTTPServer(server_address, WebRequestHandler)
         httpd.serve_forever()
     except:
-        print("could not connect to port!")
+        logger.error("could not connect to port!")
