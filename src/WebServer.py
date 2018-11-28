@@ -2,9 +2,9 @@ import re
 import logging
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from src import DataProvider
 
 logger = logging.getLogger()
+data_provider = None
 
 
 class WebRequestHandler(BaseHTTPRequestHandler):
@@ -16,14 +16,14 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         if self.path == '/api':
             self.__printRoutes__()
         elif self.path == '/api/status':
-            self.__responseWithJson(DataProvider.getCurrentStatus())
+            self.__responseWithJson(data_provider.getCurrentStatus())
         elif departure_match:
             stationId = departure_match.group(2)
 
             if stationId == '':
-                response = DataProvider.getAllDepartures()
+                response = data_provider.getAllDepartures()
             else:
-                response = DataProvider.getAllDeparturesByStation(stationId)
+                response = data_provider.getAllDeparturesByStation(stationId)
 
             self.__responseWithJson(response)
         else:
@@ -63,7 +63,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         return
 
 
-def start():
+def start(data_provider_instance):
+    global data_provider
+    data_provider = data_provider_instance
+
     server_address = ('127.0.0.1', 8081)
     logger.log(logging.INFO, 'starting web server at 127.0.0.1:8081')
     try:
