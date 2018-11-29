@@ -3,6 +3,8 @@ import logging
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+from src.DataProvider import DataProvider
+
 logger = logging.getLogger()
 data_provider = None
 
@@ -63,9 +65,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         return
 
 
-def start(data_provider_instance):
+def start(sql_worker):
     global data_provider
-    data_provider = data_provider_instance
+    data_provider = DataProvider(sql_worker)
 
     server_address = ('127.0.0.1', 8081)
     logger.info('starting web server at 127.0.0.1:8081')
