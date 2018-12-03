@@ -1,5 +1,6 @@
 import re
 import logging
+import os
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -69,7 +70,7 @@ def start(sql_worker):
     global data_provider
     data_provider = DataProvider(sql_worker)
 
-    server_address = ('127.0.0.1', 8081)
+    server_address = ('127.0.0.1', os.environ["APP_PORT"] if "APP_PORT" in os.environ else 8081)
     logger.info('starting web server at 127.0.0.1:8081')
     try:
         httpd = HTTPServer(server_address, WebRequestHandler)
