@@ -1,1 +1,1 @@
-app: python3 main.py --all
+web: python3 main.py --all

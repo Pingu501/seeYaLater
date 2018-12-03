@@ -52,7 +52,7 @@ def lineFetcher(line_id, sql_worker):
         elif sleep_time > 60 * 60:
             sleep_time = 60 * 60
 
-        logger.info('Line {} finished fetching \t going to sleep for {} seconds'.format(line_id, sleep_time))
+        logger.info('Line {}: \t finished fetching \t going to sleep for {} seconds'.format(line_id, sleep_time))
         time.sleep(sleep_time)
 
 
