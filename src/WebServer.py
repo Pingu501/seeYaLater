@@ -71,8 +71,8 @@ def start(sql_worker):
     data_provider = DataProvider(sql_worker)
 
     port = os.environ["PORT"] if "PORT" in os.environ else 8081
-    server_address = ('127.0.0.1', port)
-    logger.info('starting web server at 127.0.0.1:{}'.format(port))
+    server_address = ('0.0.0.0', port)
+    logger.info('starting web server on port {}'.format(port))
     try:
         httpd = HTTPServer(server_address, WebRequestHandler)
         httpd.serve_forever()
