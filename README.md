@@ -7,27 +7,31 @@ and nobody has the time to proof this right.
 
 But for this we invented computer! ;)
 
-Small **Python3** Script running in the background asking the API of the DVB 
+Small **Python3** Script running in the background asking the API of the DVB
 frequently for all departures in Dresden.
 
+[DVB API documentation](https://github.com/kiliankoe/vvo/blob/master/documentation/webapi.md)
 
-[API documentation](https://github.com/kiliankoe/vvo/blob/master/documentation/webapi.md)
+## Quick Start with docker
+
+```
+docker build -t see-ya-later:latest . && docker run -it --rm -p 8081:8081 see-ya-later:latest
+```
 
 ## Options
 
 By default the following stations are checked
 
-| ID       | Station Name|
-| :--------| ---- |
-| 33000005 | Pirnaischer Platz | 
-| 33000007 | Straßburger Platz |
-| 33000028 | HBF |
-| 33000115 | Wasaplatz |
+| ID       | Station Name                                  |
+| :------- | --------------------------------------------- |
+| 33000005 | Pirnaischer Platz                             |
+| 33000007 | Straßburger Platz                             |
+| 33000028 | HBF                                           |
+| 33000115 | Wasaplatz                                     |
 | 33000727 | Technische Universität (Fritz-Foerster-Platz) |
-| 33000052 | Schillerplatz |
-| 33000111 | Lenneplatz |
-| 33000742 | Helmholtzstraße |
-
+| 33000052 | Schillerplatz                                 |
+| 33000111 | Lenneplatz                                    |
+| 33000742 | Helmholtzstraße                               |
 
 Use `--all` to fetch nearly all stations in Dresden
 
