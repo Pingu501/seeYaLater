@@ -70,11 +70,11 @@ def start(sql_worker):
     global data_provider
     data_provider = DataProvider(sql_worker)
 
-    port = os.environ["PORT"] if "PORT" in os.environ else 8081
+    port = int(os.environ["PORT"]) if "PORT" in os.environ else 8081
     server_address = ('0.0.0.0', port)
     logger.info('starting web server on port {}'.format(port))
     try:
         httpd = HTTPServer(server_address, WebRequestHandler)
         httpd.serve_forever()
-    except:
-        logger.error("could not connect to port!")
+    except Exception as e:
+        logger.error(e)
