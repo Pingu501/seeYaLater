@@ -70,7 +70,7 @@ def start(sql_worker):
     global data_provider
     data_provider = DataProvider(sql_worker)
 
-    port = os.environ["APP_PORT"] if "APP_PORT" in os.environ else 8081
+    port = os.environ["PORT"] if "PORT" in os.environ else 8081
     server_address = ('127.0.0.1', port)
     logger.info('starting web server at 127.0.0.1:{}'.format(port))
     try:
