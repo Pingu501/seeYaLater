@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+import re
 import requests
 
 from miner.models import Line, Stop, StopsOfLine
@@ -16,8 +17,8 @@ class StopInitializer:
         """
 
         for stop_id in self.initial_known_stops:
-            response = requests.get('https://webapi.vvo-online.de/dm',
-                                    {'stopid': stop_id, 'mot': '[Tram, CityBus]', 'limit': 30})
+            response = requests.post('https://webapi.vvo-online.de/dm',
+                                     {'stopid': stop_id, 'mot': '[Tram, CityBus]', 'limit': 30})
             json = response.json()
 
             for departure in json['Departures']:
@@ -34,7 +35,7 @@ class StopInitializer:
             # no clue what stop id is for in this request, but is required
             post_fields = {'tripId': line.trip, 'time': now, 'stopId': self.initial_known_stops[0]}
 
-            response = requests.get('https://webapi.vvo-online.de/dm/trip', post_fields)
+            response = requests.post('https://webapi.vvo-online.de/dm/trip', post_fields)
 
             stop_number = 0
             for stop_raw in response.json()['Stops']:
@@ -45,3 +46,16 @@ class StopInitializer:
 
                 StopsOfLine.objects.get_or_create(stop=stop, line=line, position=stop_number)
                 stop_number += 1
+
+    @staticmethod
+    def fetch_stop_coordinates():
+        for stop in Stop.objects.all():
+            response = requests.post('https://webapi.vvo-online.de/tr/pointfinder', {'query': stop.id})
+
+            # first hit should always be the right stop
+            result = response.json()['Points'][0]
+            p = re.match(r"\d{8}\|\|\|.*\|(\d*)\|(\d*)\|\d*\|\|", result)
+
+            stop.x_coordinate = p.group(1)
+            stop.y_coordinate = p.group(2)
+            stop.save()
