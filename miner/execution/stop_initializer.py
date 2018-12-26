@@ -50,12 +50,18 @@ class StopInitializer:
     @staticmethod
     def fetch_stop_coordinates():
         for stop in Stop.objects.all():
+            if stop.x_coordinate != 0 and stop.y_coordinate != 0:
+                continue
+
             response = requests.post('https://webapi.vvo-online.de/tr/pointfinder', {'query': stop.id})
 
             # first hit should always be the right stop
             result = response.json()['Points'][0]
             p = re.match(r"\d{8}\|\|\|.*\|(\d*)\|(\d*)\|\d*\|\|", result)
 
-            stop.x_coordinate = p.group(1)
-            stop.y_coordinate = p.group(2)
-            stop.save()
+            try:
+                stop.x_coordinate = p.group(1)
+                stop.y_coordinate = p.group(2)
+                stop.save()
+            except:
+                print('Error while parsing: ', result)
