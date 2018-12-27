@@ -16,7 +16,9 @@ Including another URLconf
 from django.urls import include, path
 from miner.execution.conductor import Conductor
 
-Conductor.prepare()
+conductor = Conductor()
+conductor.prepare()
+conductor.start()
 
 urlpatterns = [
     path('', include('miner.urls')),

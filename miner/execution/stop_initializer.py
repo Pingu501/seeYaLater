@@ -22,11 +22,9 @@ class StopInitializer:
             json = response.json()
 
             for departure in json['Departures']:
-                try:
-                    Line.objects.get(name=departure['LineName'], direction=departure['Direction'])
-                except Line.DoesNotExist:
-                    Line.objects.create(name=departure['LineName'], direction=departure['Direction'],
-                                        trip=departure['Id'])
+                line = Line.objects.get_or_create(name=departure['LineName'], direction=departure['Direction'])[0]
+                line.trip = departure['Id']
+                line.save()
 
     def fetch_stops_from_lines(self):
         now = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -36,6 +34,10 @@ class StopInitializer:
             post_fields = {'tripId': line.trip, 'time': now, 'stopId': self.initial_known_stops[0]}
 
             response = requests.post('https://webapi.vvo-online.de/dm/trip', post_fields)
+
+            if response.status_code >= 400:
+                print('Error fetching line {} got {}'.format(line.name, response.json()))
+                continue
 
             stop_number = 0
             for stop_raw in response.json()['Stops']:
