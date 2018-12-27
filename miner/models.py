@@ -22,8 +22,8 @@ class Departure(models.Model):
     stop = models.ForeignKey(Stop, on_delete=models.DO_NOTHING)
     line = models.ForeignKey(Line, on_delete=models.DO_NOTHING)
 
-    scheduled_time = models.DateTimeField('scheduled time')
-    real_time = models.DateTimeField('real time')
+    scheduled_time = models.DateTimeField('scheduled time', null=True)
+    real_time = models.DateTimeField('real time', null=True)
 
 
 class StopsOfLine(models.Model):

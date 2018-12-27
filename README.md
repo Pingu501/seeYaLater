@@ -28,13 +28,16 @@ By default the following stations are checked
 
 | ID       | Station Name                                  |
 | :------- | --------------------------------------------- |
+| 33000001 | Bahnhof Mitte                                 |
 | 33000005 | Pirnaischer Platz                             |
 | 33000007 | Straßburger Platz                             |
 | 33000028 | HBF                                           |
-| 33000115 | Wasaplatz                                     |
-| 33000727 | Technische Universität (Fritz-Foerster-Platz) |
+| 33000037 | Postplatz                                     |
 | 33000052 | Schillerplatz                                 |
 | 33000111 | Lenneplatz                                    |
+| 33000115 | Wasaplatz                                     |
+| 33000144 | Tharandter Straße                             | 
+| 33000727 | Technische Universität (Fritz-Foerster-Platz) |
 | 33000742 | Helmholtzstraße                               |
 
 Use `--all` to fetch nearly all stations in Dresden

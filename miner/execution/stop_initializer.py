@@ -7,7 +7,8 @@ from miner.models import Line, Stop, StopsOfLine
 
 
 class StopInitializer:
-    initial_known_stops = [33000005, 33000007, 33000028, 33000115, 33000727, 33000052, 33000111, 33000742]
+    initial_known_stops = [33000005, 33000007, 33000028, 33000115, 33000727, 33000052, 33000111, 33000742, 33000037,
+                           33000144]
 
     def fetch_lines_from_initial_stops(self):
         """
@@ -30,7 +31,8 @@ class StopInitializer:
         now = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
         for line in Line.objects.all():
-            # no clue what stop id is for in this request, but is required
+            # the stop id is required and tells whether the delivered stops are before or after this one
+            # not used by us at the moment
             post_fields = {'tripId': line.trip, 'time': now, 'stopId': self.initial_known_stops[0]}
 
             response = requests.post('https://webapi.vvo-online.de/dm/trip', post_fields)
