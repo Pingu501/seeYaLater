@@ -3,6 +3,8 @@ from concurrent.futures.thread import ThreadPoolExecutor
 import datetime
 
 import re
+
+import pytz
 import requests
 
 from miner.execution.stop_initializer import StopInitializer
@@ -10,8 +12,9 @@ from miner.models import Stop, Departure, Line
 
 
 class Conductor:
-    # TODO: type this dict
+    # dict of stopIds with the amount of seconds to wait for next fetch
     wait_times = {}
+
     executor = ThreadPoolExecutor(max_workers=11)
 
     @staticmethod
@@ -20,11 +23,11 @@ class Conductor:
 
         # first we need to fetch all lines from the stops we already know
         print('Fetching all lines ...')
-        initializer.fetch_lines_from_initial_stops()
+        # initializer.fetch_lines_from_initial_stops()
 
         # then we search for all stops the found line serves
         print('Fetching all stops from lines ...')
-        initializer.fetch_stops_from_lines()
+        # initializer.fetch_stops_from_lines()
 
         # get the coordinates of the stops
         if with_coordinates:
@@ -40,13 +43,21 @@ class Conductor:
 
     def __start_scheduler__(self):
         while True:
+            runs = 0
             now = datetime.datetime.now().second
             for stop_id in self.wait_times:
                 if self.wait_times[stop_id] <= now:
                     self.executor.submit(self.__fetch_departure__(stop_id))
+                    runs += 1
+
+            if runs == 0:
+                print('nothing to do, sleep')
                 time.sleep(60)
+            else:
+                print('added {} stops to fetch list'.format(runs))
 
     def __fetch_departure__(self, stop_id: str):
+        print('start fetching')
         response = requests.get('https://webapi.vvo-online.de/dm',
                                 {'limit': 10, 'mot': '[Tram, CityBus]', 'stopid': stop_id})
 
@@ -54,19 +65,21 @@ class Conductor:
             print('Error while fetching departure: {}', response.json())
             return
 
+        time_to_wait = datetime.datetime.now().astimezone(pytz.timezone('Europe/Berlin')) + datetime.timedelta(1)
         stop = Stop.objects.get(id=stop_id)
+
         for departure_json in response.json()['Departures']:
-            self.__create_departure_from_json__(departure_json, stop)
+            departure = self.__create_departure_from_json__(departure_json, stop)
+
+            if departure.real_time < time_to_wait:
+                time_to_wait = departure.real_time
+
+        self.__set_wait_time__(stop_id, time_to_wait)
+        print('Finished fetching {}'.format(stop.name))
 
     @staticmethod
-    def __create_departure_from_json__(departure_json: dict, stop: Stop):
-        try:
-            line = Line.objects.get(name=departure_json['LineName'], direction=departure_json['Direction'])
-        except Line.DoesNotExist:
-            print('Line number {} to {} does not exists, skipping'.format(departure_json['LineName'],
-                                                                          departure_json['Direction']))
-            return None
-
+    def __create_departure_from_json__(departure_json: dict, stop: Stop) -> Departure:
+        line = Line.objects.get_or_create(name=departure_json['LineName'], direction=departure_json['Direction'])[0]
         departure = Departure.objects.get_or_create(stop=stop, internal_id=departure_json['Id'], line=line)[0]
 
         departure.scheduled_time = Conductor.__parse_date_string_to_datetime(departure_json['ScheduledTime'])
@@ -74,6 +87,7 @@ class Conductor:
             departure_json['RealTime' if 'RealTime' in departure_json.keys() else 'ScheduledTime'])
 
         departure.save()
+        return departure
 
     @staticmethod
     def __parse_date_string_to_datetime(date: str) -> datetime:
@@ -83,3 +97,6 @@ class Conductor:
         timedelta = datetime.timedelta(hours=int(p.group(2)))
 
         return datetime.datetime.fromtimestamp(timestamp / 1000, datetime.timezone(timedelta))
+
+    def __set_wait_time__(self, stop_id: str, next_departure: datetime):
+        self.wait_times[stop_id] = next_departure
