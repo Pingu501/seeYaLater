@@ -27,11 +27,11 @@ class Conductor:
 
         # first we need to fetch all lines from the stops we already know
         print('Fetching all lines ...')
-        # initializer.fetch_lines_from_initial_stops()
+        initializer.fetch_lines_from_initial_stops()
 
         # then we search for all stops the found line serves
         print('Fetching all stops from lines ...')
-        # initializer.fetch_stops_from_lines()
+        initializer.fetch_stops_from_lines()
 
         # get the coordinates of the stops
         if with_coordinates:
@@ -57,25 +57,20 @@ class Conductor:
             jobs_added = 0
 
             for stop in self.next_fetch_times:
-                # only add the stop to work queue if we need to right now
                 fetch_time = self.next_fetch_times[stop]
 
+                # only add the stop to work queue if we need to right now
                 if now >= fetch_time > self.in_queue_marker:
                     self.next_fetch_times[stop] = self.in_queue_marker
                     q.put(stop)
                     jobs_added += 1
 
-            print('added {} jobs to queue'.format(jobs_added))
             time.sleep(10)
 
     def __fetch_departure__(self, q: Queue):
         while True:
+            # this line blocks until something is added to the queue
             stop_id = q.get()
-
-            if not stop_id:
-                print('empty queue, good night')
-                time.sleep(1)
-                continue
 
             response = requests.get('https://webapi.vvo-online.de/dm',
                                     {'limit': 10, 'mot': '[Tram, CityBus]', 'stopid': stop_id})
@@ -84,7 +79,7 @@ class Conductor:
                 print('Error while fetching departure: {}', response.json())
                 continue
 
-            time_to_wait = datetime.datetime.now().astimezone(pytz.timezone('Europe/Berlin')) + datetime.timedelta(1)
+            time_to_wait = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(1)
             stop = Stop.objects.get(id=stop_id)
 
             for departure_json in response.json()['Departures']:
