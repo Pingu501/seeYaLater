@@ -65,6 +65,7 @@ class Conductor:
                     q.put(stop)
                     jobs_added += 1
 
+            print('added {} jobs to queue'.format(jobs_added))
             time.sleep(10)
 
     def __fetch_departure__(self, q: Queue):
@@ -72,6 +73,7 @@ class Conductor:
             stop_id = q.get()
 
             if not stop_id:
+                print('empty queue, good night')
                 time.sleep(1)
                 continue
 
@@ -93,6 +95,11 @@ class Conductor:
 
                 if departure.real_time < time_to_wait:
                     time_to_wait = departure.real_time
+
+            # always wait at least 60 seconds
+            now = datetime.datetime.now(pytz.utc)
+            if time_to_wait - now < datetime.timedelta(0, 60):
+                time_to_wait = now + datetime.timedelta(0, 60)
 
             self.next_fetch_times[stop_id] = time_to_wait
 
