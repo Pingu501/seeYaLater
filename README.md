@@ -19,7 +19,7 @@ frequently for all departures in Dresden.
 Before starting make sure you are running some kind of database and it is configured in `seeYaLater/settings.py`
 
 ```
-python3 manage.py runserver
+python3 manage.py start_miner
 ```
 
 ## Options
