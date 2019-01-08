@@ -83,7 +83,7 @@ class Conductor:
             stop = Stop.objects.get(id=stop_id)
 
             for departure_json in response.json()['Departures']:
-                departure = self.__create_departure_from_json__(departure_json, stop)
+                departure = self.create_departure_from_json(departure_json, stop)
 
                 if not departure:
                     continue
@@ -99,25 +99,29 @@ class Conductor:
             self.next_fetch_times[stop_id] = time_to_wait
 
     @staticmethod
-    def __create_departure_from_json__(departure_json: dict, stop: Stop) -> Optional[Any]:
+    def create_departure_from_json(departure_json: dict, stop: Stop) -> Optional[Departure]:
         try:
             line = Line.objects.get_or_create(name=departure_json['LineName'], direction=departure_json['Direction'])[0]
             departure = Departure.objects.get_or_create(stop=stop, internal_id=departure_json['Id'], line=line)[0]
         except Line.MultipleObjectsReturned:
             return None
 
-        departure.scheduled_time = Conductor.__parse_date_string_to_datetime(departure_json['ScheduledTime'])
-        departure.real_time = Conductor.__parse_date_string_to_datetime(
+        departure.scheduled_time = Conductor.parse_date_string_to_datetime(departure_json['ScheduledTime'])
+        departure.real_time = Conductor.parse_date_string_to_datetime(
             departure_json['RealTime' if 'RealTime' in departure_json.keys() else 'ScheduledTime'])
 
         departure.save()
         return departure
 
     @staticmethod
-    def __parse_date_string_to_datetime(date: str) -> datetime:
+    def parse_date_string_to_datetime(date: str) -> datetime:
         p = re.match(r"/Date\((\d{13})([-|+]0\d)00\)/", date)
 
-        timestamp = int(p.group(1))
-        timedelta = datetime.timedelta(hours=int(p.group(2)))
+        if p:
+            timestamp = int(p.group(1))
+            timedelta = datetime.timedelta(hours=int(p.group(2)))
+            return datetime.datetime.fromtimestamp(timestamp / 1000, datetime.timezone(timedelta))
 
-        return datetime.datetime.fromtimestamp(timestamp / 1000, datetime.timezone(timedelta))
+        else:
+            return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S').astimezone(
+                datetime.timezone(datetime.timedelta(hours=2)))

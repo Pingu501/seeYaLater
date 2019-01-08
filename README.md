@@ -49,6 +49,14 @@ nohup python3 manage.py start_miner
 
 ___TODO:___ run this as a service is much better for servers
 
+## Migration from Prototype
+
+Make sure the db file is named `seeYaLater.db` and in the current directory.
+
+```
+python3 manage.py migrate_from_prototype
+```
+
 ## TODOs
 
 - [ ] some kind of UI for users to use the data (VueJS)
