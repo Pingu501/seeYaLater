@@ -1,7 +1,5 @@
 # SeeYaLater
 
-> This branch is currently WIP while the project gets rewritten with django.
-
 This project is not about flaming bus drivers!
 
 Some bus lines in Dresden seem to be always late ...
@@ -40,22 +38,20 @@ By default the following stations are checked
 | 33000727 | Technische Universität (Fritz-Foerster-Platz) |
 | 33000742 | Helmholtzstraße                               |
 
-Use `--all` to fetch nearly all stations in Dresden
 
 ## Running this project in background
 
-To run this in background use `nohup`. This will survive ssh hangups. Make sure to run this command
-always from the same directory. Otherwise you will end up with more than one database.
+To run this in background use `nohup`. This will survive ssh hangups.
 
 ```
-nohup python3.6 main.py &
+nohup python3 manage.py start_miner
 ```
 
 ___TODO:___ run this as a service is much better for servers
 
 ## TODOs
 
-- some kind of UI for users to use the data (React?)
-- analyse the data
-- use weather information
-- maybe machine learning could be used here?
+- [ ] some kind of UI for users to use the data (VueJS)
+- [ ] analyse the data
+- [ ] use weather information
+- [ ] maybe machine learning could be used here?
