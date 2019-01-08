@@ -32,8 +32,8 @@ class Command(BaseCommand):
                     'RealTime': entry[3],
                     'ScheduledTime': entry[4]
                 }, stop=stop)
-            except Exception:
-                print('failed to migrate {}'.format(entry))
+            except Exception as e:
+                print('failed to migrate {}'.format(entry), e)
             done += 1
 
             # self.__delete_entry__(entry[0], entry[1], stop.id)
