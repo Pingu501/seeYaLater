@@ -20,9 +20,7 @@ Before starting make sure you are running some kind of database and it is config
 python3 manage.py start_miner
 ```
 
-## Options
-
-By default the following stations are checked
+## Initial Stops
 
 | ID       | Station Name                                  |
 | :------- | --------------------------------------------- |
