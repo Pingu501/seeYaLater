@@ -50,15 +50,17 @@ class Conductor:
 
         # init workers
         q = Queue()
-        for _ in range(10):
+        workers = []
+        for _ in range(20):
             worker = Thread(target=self.__fetch_departure__, args=(q,))
             worker.setDaemon(True)
             worker.start()
+            workers.append(worker)
 
         while True:
             now = datetime.datetime.now().astimezone(pytz.utc)
-            jobs_added = 0
 
+            # queue up needed stops
             for stop in self.next_fetch_times:
                 fetch_time = self.next_fetch_times[stop]
 
@@ -66,7 +68,10 @@ class Conductor:
                 if now >= fetch_time > self.in_queue_marker:
                     self.next_fetch_times[stop] = self.in_queue_marker
                     q.put(stop)
-                    jobs_added += 1
+
+            for worker in workers:
+                if not worker.is_alive():
+                    worker.start()
 
             time.sleep(10)
 

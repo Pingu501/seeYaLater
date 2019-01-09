@@ -68,7 +68,7 @@ class StopInitializer:
 
             # first hit should always be the right stop
             result = response.json()['Points'][0]
-            p = re.match(r"\d{8}\|\|\|.*\|(\d*)\|(\d*)\|\d*\|\|", result)
+            p = re.match(r"\d{8}\|\|\|?.*\|(\d*)\|(\d*)\|\d*\|\|", result)
 
             try:
                 stop.x_coordinate = p.group(1)
