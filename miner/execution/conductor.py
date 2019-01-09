@@ -1,7 +1,7 @@
 from multiprocessing import Queue
 from threading import Thread
 
-from typing import Optional, Any
+from typing import Optional
 
 import re
 
@@ -22,7 +22,7 @@ class Conductor:
     in_queue_marker = datetime.datetime(1970, 1, 1, 0, 0, 0, 0, pytz.utc)
 
     @staticmethod
-    def prepare(with_coordinates=False):
+    def prepare(with_coordinates=True):
         initializer = StopInitializer()
 
         # first we need to fetch all lines from the stops we already know
@@ -38,11 +38,14 @@ class Conductor:
             print('Fetching coordinates of stops ...')
             initializer.fetch_stop_coordinates()
 
+        print('Finished preparation')
+
     def __init_fetch_times__(self):
         now = datetime.datetime.now().astimezone(pytz.utc)
         self.next_fetch_times = {stop.id: now for stop in Stop.objects.all()}
 
     def start(self):
+        print('Starting workers')
         self.__init_fetch_times__()
 
         # init workers
@@ -79,6 +82,9 @@ class Conductor:
                 print('Error while fetching departure: {}', response.json())
                 continue
 
+            if 'Departures' not in response.json():
+                continue
+
             time_to_wait = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(1)
             stop = Stop.objects.get(id=stop_id)
 
@@ -103,7 +109,7 @@ class Conductor:
         try:
             line = Line.objects.get_or_create(name=departure_json['LineName'], direction=departure_json['Direction'])[0]
             departure = Departure.objects.get_or_create(stop=stop, internal_id=departure_json['Id'], line=line)[0]
-        except Line.MultipleObjectsReturned:
+        except Exception:
             return None
 
         departure.scheduled_time = Conductor.parse_date_string_to_datetime(departure_json['ScheduledTime'])

@@ -12,9 +12,7 @@ class StopInitializer:
 
     def fetch_lines_from_initial_stops(self):
         """
-        this will look for the next 30 lines driving threw each of the initial known stops
-
-        :return: list of all found lines
+        This will look for the next 30 lines driving threw each of the initial known stops
         """
 
         for stop_id in self.initial_known_stops:
@@ -28,9 +26,18 @@ class StopInitializer:
                 line.save()
 
     def fetch_stops_from_lines(self):
+        """
+        In fetch_lines_from_initial_stops the route of each line is sent which we use to find all
+        stops for the line. Combined with all lines we should be able to get all stops
+
+        :return: void
+        """
         now = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
         for line in Line.objects.all():
+            if line.trip == 0:
+                continue
+
             # the stop id is required and tells whether the delivered stops are before or after this one
             # not used by us at the moment
             post_fields = {'tripId': line.trip, 'time': now, 'stopId': self.initial_known_stops[0]}
@@ -43,12 +50,12 @@ class StopInitializer:
 
             stop_number = 0
             for stop_raw in response.json()['Stops']:
-                try:
-                    stop = Stop.objects.get(id=stop_raw['Id'])
-                except Stop.DoesNotExist:
-                    stop = Stop.objects.create(id=stop_raw['Id'], name=stop_raw['Name'])
+                stop = Stop.objects.get_or_create(id=stop_raw['Id'])[0]
+                stop.name = stop_raw['Name']
+                stop.save()
 
                 StopsOfLine.objects.get_or_create(stop=stop, line=line, position=stop_number)
+
                 stop_number += 1
 
     @staticmethod
