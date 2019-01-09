@@ -84,7 +84,16 @@ class Conductor:
                                     {'limit': 10, 'mot': '[Tram, CityBus]', 'stopid': stop_id})
 
             if response.status_code >= 400:
-                print('Error while fetching departure: {}', response.json())
+                if 'Status' in response.json() and 'Message' in response.json()['Status']:
+                    if 'service not available' in response.json()['Status']['Message']:
+                        print('Service is down')
+                        time.sleep(20)
+                        continue
+
+                    print(response.json()['Status']['Message'])
+                else:
+                    print('Some undefined error occurred: ', response.json())
+
                 continue
 
             if 'Departures' not in response.json():
