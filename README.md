@@ -10,6 +10,8 @@ But for this we invented computer! ;)
 Small **Python3** Script running in the background asking the API of the DVB
 frequently for all departures in Dresden.
 
+> Please make sure you are running Python 3.7
+
 [DVB API documentation](https://github.com/kiliankoe/vvo/blob/master/documentation/webapi.md)
 
 ## Quick Start
@@ -45,8 +47,6 @@ To run this in background use `nohup`. This will survive ssh hangups.
 nohup python3 manage.py start_miner
 ```
 
-___TODO:___ run this as a service is much better for servers
-
 ## Migration from Prototype
 
 Make sure the db file is named `seeYaLater.db` and in the current directory.
@@ -57,6 +57,7 @@ python3 manage.py migrate_from_prototype
 
 ## TODOs
 
+- [ ] API
 - [ ] some kind of UI for users to use the data (VueJS)
 - [ ] analyse the data
 - [ ] use weather information
