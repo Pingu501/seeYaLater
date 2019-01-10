@@ -1,5 +1,8 @@
 const pkg = require('./package')
 
+const isProd = process.env.NODE_ENV === 'production'
+const isDev = !isProd
+
 module.exports = {
   mode: 'universal',
 
@@ -40,7 +43,14 @@ module.exports = {
   ** Nuxt.js modules
   */
   modules: [
-  ],
+    ['@nuxtjs/axios', {baseURL: '/api/'}]
+  ].concat(isDev ? '@nuxtjs/proxy' : []),
+
+  proxy: {
+    '/api/': {
+      target: 'http://localhost:8000'
+    }
+  },
 
   /*
   ** Build configuration
