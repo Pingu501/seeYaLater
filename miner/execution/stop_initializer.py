@@ -22,8 +22,12 @@ class StopInitializer:
 
             for departure in json['Departures']:
                 line = Line.objects.get_or_create(name=departure['LineName'], direction=departure['Direction'])[0]
-                line.trip = departure['Id']
-                line.save()
+                try:
+                    line.trip = departure['Id']
+                    line.save()
+                except Exception:
+                    line.trip = 0
+                    line.save()
 
     def fetch_stops_from_lines(self):
         """
@@ -45,7 +49,9 @@ class StopInitializer:
             response = requests.post('https://webapi.vvo-online.de/dm/trip', post_fields)
 
             if response.status_code >= 400:
-                print('Error fetching line {} got {}'.format(line.name, response.json()))
+                # sort out old lines
+                line.trip = 0
+                line.save()
                 continue
 
             stop_number = 0

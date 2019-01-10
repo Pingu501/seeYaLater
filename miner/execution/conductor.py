@@ -16,7 +16,7 @@ from miner.models import Stop, Departure, Line
 
 
 class Conductor:
-    # dict of stopIds with the amount of seconds to wait for next fetch
+    # dict of stopIds with the time where it should next be fetched
     next_fetch_times = {}
 
     in_queue_marker = datetime.datetime(1970, 1, 1, 0, 0, 0, 0, pytz.utc)
@@ -48,8 +48,8 @@ class Conductor:
         print('Starting workers')
         self.__init_fetch_times__()
 
-        # init workers
         q = Queue()
+        # init workers
         workers = []
         for _ in range(20):
             worker = Thread(target=self.__fetch_departure__, args=(q,))
@@ -69,11 +69,12 @@ class Conductor:
                     self.next_fetch_times[stop] = self.in_queue_marker
                     q.put(stop)
 
+            # restart all failed workers
             for worker in workers:
                 if not worker.is_alive():
                     worker.start()
 
-            time.sleep(10)
+            time.sleep(5)
 
     def __fetch_departure__(self, q: Queue):
         while True:
@@ -83,11 +84,15 @@ class Conductor:
             response = requests.get('https://webapi.vvo-online.de/dm',
                                     {'limit': 10, 'mot': '[Tram, CityBus]', 'stopid': stop_id})
 
+            # TODO: fail strategy!
             if response.status_code >= 400:
                 if 'Status' in response.json() and 'Message' in response.json()['Status']:
                     if 'service not available' in response.json()['Status']['Message']:
                         print('Service is down')
                         time.sleep(20)
+
+                        # add stop again to queue and try again
+                        q.put(stop_id)
                         continue
 
                     print(response.json()['Status']['Message'])
