@@ -1,0 +1,18 @@
+$color: #878787;
+
+.stop {
+    padding: 300px;
+}
+
+.stop__point {
+    fill: $color;
+}
+
+.stop__text {
+    font-size: 250px;
+    fill: $color;
+
+    &.stop_text--hidden {
+        display: none;   
+    }
+}
