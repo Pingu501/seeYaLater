@@ -13,9 +13,10 @@
       {{ name }}
     </text>
     <circle
+      :id="id"
       :cx="x_coordinate"
       :cy="y_coordinate"
-      r="50"
+      r="70"
       class="stop__point"
     />
   </g>
@@ -24,6 +25,10 @@
 <script>
 export default {
   props: {
+    id: {
+      required: true,
+      type: Number
+    },
     name: {
       required: true,
       type: String
