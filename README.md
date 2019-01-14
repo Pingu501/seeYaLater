@@ -35,6 +35,7 @@ python3 manage.py start_miner
 | 33000111 | Lenneplatz                                    |
 | 33000115 | Wasaplatz                                     |
 | 33000144 | Tharandter Straße                             | 
+| 33000588 | Elbepark                                      | 
 | 33000727 | Technische Universität (Fritz-Foerster-Platz) |
 | 33000742 | Helmholtzstraße                               |
 

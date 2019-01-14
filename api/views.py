@@ -15,14 +15,11 @@ def index(request):
 
 
 def stops(request):
-    # !!!WARNING!!!
-    # we fetch the coordinates the wrong way!!
-    # change it back here!!!
     return HttpResponse(json.dumps([{
         'id': stop.id,
         'name': stop.name,
-        'x_coordinate': stop.y_coordinate,
-        'y_coordinate': stop.x_coordinate
+        'x_coordinate': stop.x_coordinate,
+        'y_coordinate': stop.y_coordinate
     } for stop in Stop.objects.all()]), content_type='application/json')
 
 

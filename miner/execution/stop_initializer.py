@@ -8,7 +8,7 @@ from miner.models import Line, Stop, StopsOfLine
 
 class StopInitializer:
     initial_known_stops = [33000005, 33000007, 33000028, 33000115, 33000727, 33000052, 33000111, 33000742, 33000037,
-                           33000144]
+                           33000144, 33000588]
 
     def fetch_lines_from_initial_stops(self):
         """
@@ -77,8 +77,8 @@ class StopInitializer:
             p = re.match(r"\d{8}\|\|\|?.*\|(\d*)\|(\d*)\|\d*\|\|", result)
 
             try:
-                stop.x_coordinate = p.group(1)
-                stop.y_coordinate = p.group(2)
+                stop.y_coordinate = p.group(1)
+                stop.x_coordinate = p.group(2)
                 stop.save()
             except:
                 print('Error while parsing: ', result)

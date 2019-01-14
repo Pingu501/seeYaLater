@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     viewBox() {
-      return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
+      return `${this.minX} ${this.minY} ${this.maxX} ${this.maxY}`
     }
   },
   async created() {
@@ -64,16 +64,18 @@ export default {
       const minY = Math.min(...y_coordinates);
       const maxY = Math.max(...y_coordinates);
 
+      const midY = maxY - minY;
+
       stopResponse.data.forEach(e => {
         this.stops[e.id] = {
           ...e,
           x_coordinate: e.x_coordinate - minX,
-          y_coordinate: e.y_coordinate - minY
+          y_coordinate: ((e.y_coordinate - minY) - midY) * -1
         }
       });
 
       this.maxX = maxX - minX;
-      this.maxY = maxY - minY;
+      this.maxY = (maxY - minY);
       
       // create connections
       const connectionResponse = await this.$axios.get('stops-of-lines');
