@@ -84,24 +84,10 @@ class Conductor:
             response = requests.get('https://webapi.vvo-online.de/dm',
                                     {'limit': 10, 'mot': '[Tram, CityBus]', 'stopid': stop_id})
 
-            # TODO: fail strategy!
-            if response.status_code >= 400:
-                if 'Status' in response.json() and 'Message' in response.json()['Status']:
-                    if 'service not available' in response.json()['Status']['Message']:
-                        print('Service is down')
-                        time.sleep(20)
-
-                        # add stop again to queue and try again
-                        q.put(stop_id)
-                        continue
-
-                    print(response.json()['Status']['Message'])
-                else:
-                    print('Some undefined error occurred: ', response.json())
-
-                continue
-
-            if 'Departures' not in response.json():
+            # when fetching fails we wait one minute and try it again
+            one_minute_wait_time = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(minutes=1)
+            if response.status_code >= 400 or 'Departures' not in response.json():
+                self.next_fetch_times[stop_id] = one_minute_wait_time
                 continue
 
             time_to_wait = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(1)
