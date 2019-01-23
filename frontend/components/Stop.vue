@@ -12,12 +12,13 @@
     >
       {{ name }}
     </text>
-    <circle
+    <rect
       :id="id"
-      :cx="x_coordinate"
-      :cy="y_coordinate"
-      r="70"
-      class="stop__point"
+      :x="x_coordinate"
+      :y="y_coordinate"
+      :width="width"
+      :height="height"
+      class="stop__rect"
     />
   </g>
 </template>
@@ -40,11 +41,23 @@ export default {
     y_coordinate: {
       required: true,
       type: Number
+    },
+    size: {
+      required: true,
+      type: Number
     }
   },
   data() {
     return {
       nameIsVisible: false
+    }
+  },
+  computed: {
+    width() {
+      return 100
+    },
+    height() {
+      return this.size * 30
     }
   },
   methods: {
