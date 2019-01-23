@@ -15,15 +15,30 @@ def index(request):
 
 
 def stops(request):
-    return HttpResponse(json.dumps([{
-        'id': stop.id,
-        'name': stop.name,
-        'x_coordinate': stop.x_coordinate,
-        'y_coordinate': stop.y_coordinate
-    } for stop in Stop.objects.all()]), content_type='application/json')
+    list_of_stops = {}
+
+    for stop in Stop.objects.all():
+        list_of_stops[stop.id] = {
+            'id': stop.id,
+            'name': stop.name,
+            'x': stop.x_coordinate,
+            'y': stop.y_coordinate,
+            'connections': [{
+                'stop_id': connection.stop.id,
+                'line': connection.line.name,
+                'direction': connection.line.direction
+            } for connection in StopsOfLine.objects.filter(stop=stop)]
+        }
+
+    return HttpResponse(json.dumps(list_of_stops), content_type='application/json')
 
 
 def lines_with_stops(request):
+    """
+    !!!unused!!!
+    :param request:
+    :return:
+    """
     all_lines_with_stops = []
     lines = Line.objects.all().order_by('name')
 
