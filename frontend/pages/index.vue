@@ -28,6 +28,9 @@
           :line="connection.line"
           :numberOfConnections="connection.numberOfConnections"
           :index="connection.index"
+
+          :selected="selected"
+          :onSelectLine="handleLineSelect"
         />
       </g>
     </svg>
@@ -46,6 +49,7 @@ export default {
     return {
       stops: {},
       connections: [],
+      selected: null,
       minX: 0,
       minY: 0,
       maxX: 100,
@@ -91,11 +95,6 @@ export default {
         const addedLines = [];
 
         stop.connections.forEach((connection, i) => {
-          if (addedLines.indexOf(connection.line) > -1) {
-            return;
-          }
-
-          addedLines.push(connection.line);
           this.connections.push({
             numberOfConnections: numberOfConnections,
             index: i,
@@ -116,7 +115,10 @@ export default {
   methods: {
     getConnectionKey(connection) {
       return `${connection.x1}-${connection.y1}-${connection.x2}-${connection.y2}-${connection.line}-${connection.index}`;
-    } 
+    },
+    handleLineSelect(line) {
+      this.selected = (this.selected === line) ? null : line;
+    }
   }
 }
 </script>

@@ -17,6 +17,10 @@ $color: #acacac;
     }
 }
 
-.connection-line:hover {
-    fill: blue;
+.connection {
+    cursor: pointer;
+    
+    &.connection--inactive {
+        stroke: #878787 !important;
+    }
 }

@@ -14,9 +14,11 @@
       :x2="x2"
       :y2="y2"
       :style="getColorForLine()"
-      class="connection-line"
+      :class="{'connection--inactive': lineIsActive}"
+      class="connection"
       @mouseenter="showLine()"
       @mouseleave="hideLine()"
+      @click="selectLine()"
     />
   </g>
 </template>
@@ -53,6 +55,15 @@ export default {
     index: {
       type: Number,
       required: true
+    },
+    selected: {
+      type: String,
+      required: false,
+      default: null
+    },
+    onSelectLine: {
+      type: Function,
+      required: true
     }
   },
   data() {
@@ -67,6 +78,9 @@ export default {
     y2Offset() {
       return this.y2 + (this.index * 40);
     },
+    lineIsActive() {
+      return this.selected !== null && this.selected !== this.line;
+    }
   },
   methods: {
     showLine() {
@@ -75,9 +89,12 @@ export default {
     hideLine() {
       this.lineIsVisible = false;
     },
+    selectLine() {
+      this.onSelectLine(this.line);
+    },
     getColorForLine() {
       const color = colorMapper.getColorForLine(this.line);
-      return `stroke:${color};stroke-width:50`;
+      return `stroke:${color};stroke-width:70`;
     }
   }
 };
