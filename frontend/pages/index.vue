@@ -21,13 +21,14 @@
         <Connection
           v-for="connection in connections"
           :key="getConnectionKey(connection)"
+          :stop1="connection.stop1"
           :x1="connection.x1"
           :y1="connection.y1"
+
+          :stop2="connection.stop2"
           :x2="connection.x2"
           :y2="connection.y2"
           :line="connection.line"
-          :numberOfConnections="connection.numberOfConnections"
-          :index="connection.index"
 
           :selected="selected"
           :onSelectLine="handleLineSelect"
@@ -94,15 +95,18 @@ export default {
         const numberOfConnections = stop.connections.length;
         const addedLines = [];
 
-        stop.connections.forEach((connection, i) => {
+        stop.connections.forEach(connection => {
           this.connections.push({
             numberOfConnections: numberOfConnections,
-            index: i,
 
             line: connection.line,
+            direction: connection.direction,
+
+            stop1: stop.id,
             x1: this.stops[stop.id].x,
             y1: this.stops[stop.id].y,
 
+            stop2: connection.stop_id,
             x2: this.stops[connection.stop_id].x,
             y2: this.stops[connection.stop_id].y,
           });
@@ -114,7 +118,7 @@ export default {
   },
   methods: {
     getConnectionKey(connection) {
-      return `${connection.x1}-${connection.y1}-${connection.x2}-${connection.y2}-${connection.line}-${connection.index}`;
+      return `${connection.line}-${connection.direction}-${connection.stop1}-${connection.stop2}`;
     },
     handleLineSelect(line) {
       this.selected = (this.selected === line) ? null : line;

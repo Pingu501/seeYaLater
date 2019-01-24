@@ -57,7 +57,7 @@ export default {
       return 100
     },
     height() {
-      return this.size * 30
+      return 100; // this.size * 30
     }
   },
   methods: {

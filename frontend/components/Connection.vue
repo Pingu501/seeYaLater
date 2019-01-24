@@ -9,10 +9,10 @@
       {{ line }}
     </text>
     <line
-      :x1="x1"
+      :x1="x1Offset"
       :y1="y1Offset"
-      :x2="x2"
-      :y2="y2"
+      :x2="x2Offset"
+      :y2="y2Offset"
       :style="getColorForLine()"
       :class="{'connection--inactive': lineIsActive}"
       class="connection"
@@ -25,14 +25,23 @@
 
 <script>
 import colorMapper from './ColorMapper';
+import connectionStopMapper from './ConnectionStopMapper.js';
 
 export default {
   props: {
+    stop1: {
+      type: Number,
+      required: true
+    },
     x1: {
       type: Number,
       required: true
     },
     y1: {
+      type: Number,
+      required: true
+    },
+    stop2: {
       type: Number,
       required: true
     },
@@ -48,14 +57,6 @@ export default {
       type: String,
       required: true
     },
-    numberOfConnections: {
-      type: Number,
-      required: true
-    },
-    index: {
-      type: Number,
-      required: true
-    },
     selected: {
       type: String,
       required: false,
@@ -68,15 +69,25 @@ export default {
   },
   data() {
     return {
+      stop1Index: connectionStopMapper.getLineIndexForStop(this.stop1, this.line),
+      stop2Index: connectionStopMapper.getLineIndexForStop(this.stop2, this.line),
+      dx: this.x1 - this.x2,
+      dy: this.y1 - this.y2,
       lineIsVisible: false
     };
   },
   computed: {
+    x1Offset() {
+      return this.x1 + (this.dx > this.dy ? this.stop1Index * 40 : 0);
+    },
     y1Offset() {
-      return this.y1 + (this.index * 40);
+      return this.y1 + (this.dx > this.dy ? this.stop1Index * 40 : 0);
+    },
+    x2Offset() {
+      return this.x2 + (this.dx > this.dy ? this.stop1Index * 40 : 0);
     },
     y2Offset() {
-      return this.y2 + (this.index * 40);
+      return this.y2 + (this.dx > this.dy ? this.stop1Index * 40 : 0);
     },
     lineIsActive() {
       return this.selected !== null && this.selected !== this.line;
@@ -94,7 +105,7 @@ export default {
     },
     getColorForLine() {
       const color = colorMapper.getColorForLine(this.line);
-      return `stroke:${color};stroke-width:70`;
+      return `stroke:${color};stroke-width:50`;
     }
   }
 };
