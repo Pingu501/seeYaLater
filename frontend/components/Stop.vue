@@ -1,6 +1,6 @@
 <template>
   <g
-    class="stop"
+    class="stop__wrapper"
     @mouseenter="toggleName"
     @mouseleave="toggleName"
   >

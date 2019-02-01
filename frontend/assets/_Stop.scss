@@ -1,7 +1,8 @@
 $color: #acacac;
 
-.stop {
+.stop__wrapper {
     padding: 300px;
+    z-index: 100;
 }
 
 .stop__rect {
@@ -11,16 +12,9 @@ $color: #acacac;
 .stop__text {
     font-size: 250px;
     fill: $color;
+    z-index: 400;
 
     &.stop_text--hidden {
-        display: none;   
-    }
-}
-
-.connection {
-    cursor: pointer;
-    
-    &.connection--inactive {
-        stroke: #878787 !important;
+        display: none;
     }
 }

@@ -1,0 +1,16 @@
+.connection {
+    cursor: pointer;
+    z-index: 100;
+    
+    &.connection--inactive {
+        stroke: #878787 !important;
+    }
+
+    .connection__text {
+        z-index: 400;
+
+        &.connection__text--hidden {
+            display: none;
+        }
+    }
+}

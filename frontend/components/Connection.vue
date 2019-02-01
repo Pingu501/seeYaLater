@@ -3,8 +3,8 @@
     <text
       :x="x1"
       :y="y1"
-      :class="{'stop_text--hidden': !lineIsVisible}"
-      class="stop__text"
+      :class="{'connection__text--hidden': !lineIsVisible}"
+      class="connection__text"
     >
       {{ line }}
     </text>

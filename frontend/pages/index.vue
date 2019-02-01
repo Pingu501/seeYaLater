@@ -6,34 +6,30 @@
       width="100%"
       class="map"
     >
-      <g>
-        <Stop
-          v-for="stop in stops"
-          :key="stop.id"
-          :id="stop.id"
-          :name="stop.name"
-          :x_coordinate="stop.x"
-          :y_coordinate="stop.y"
-          :size="stop.size"
-        />
-      </g>
-      <g>
-        <Connection
-          v-for="connection in connections"
-          :key="getConnectionKey(connection)"
-          :stop1="connection.stop1"
-          :x1="connection.x1"
-          :y1="connection.y1"
+      <Stop
+        v-for="stop in stops"
+        :key="stop.id"
+        :id="stop.id"
+        :name="stop.name"
+        :x_coordinate="stop.x"
+        :y_coordinate="stop.y"
+        :size="stop.size"
+      />
+      <Connection
+        v-for="connection in connections"
+        :key="getConnectionKey(connection)"
+        :stop1="connection.stop1"
+        :x1="connection.x1"
+        :y1="connection.y1"
 
-          :stop2="connection.stop2"
-          :x2="connection.x2"
-          :y2="connection.y2"
-          :line="connection.line"
+        :stop2="connection.stop2"
+        :x2="connection.x2"
+        :y2="connection.y2"
+        :line="connection.line"
 
-          :selected="selected"
-          :onSelectLine="handleLineSelect"
-        />
-      </g>
+        :selected="selected"
+        :onSelectLine="handleLineSelect"
+      />
     </svg>
   </section>
 </template>
