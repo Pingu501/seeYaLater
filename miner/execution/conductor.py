@@ -51,7 +51,7 @@ class Conductor:
         q = Queue()
         # init workers
         workers = []
-        for _ in range(20):
+        for _ in range(10):
             worker = Thread(target=self.__fetch_departure__, args=(q,))
             worker.setDaemon(True)
             worker.start()
