@@ -113,7 +113,14 @@ class Conductor:
     def create_departure_from_json(departure_json: dict, stop: Stop) -> Optional[Departure]:
         try:
             line = Line.objects.get_or_create(name=departure_json['LineName'], direction=departure_json['Direction'])[0]
-            departure = Departure.objects.get_or_create(stop=stop, internal_id=departure_json['Id'], line=line)[0]
+
+            # split it up to reduce load on sql server
+            departures = Departure.objects.filter(stop=stop, internal_id=departure_json['Id'], line=line)
+
+            departure = departures.first() \
+                if departures.exists() \
+                else Departure.objects.create(stop=stop, internal_id=departure_json['Id'], line=line)
+
         except Exception:
             return None
 
