@@ -8,42 +8,23 @@ from miner.models import Departure, Stop, Line, StopsOfLine
 def index(request):
     data = {
         'stop_count': Stop.objects.count(),
-        'departure_count': Departure.objects.count(),
+        'departure_count': Departure.objects.count()
     }
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def stops(request):
-    list_of_stops = {}
-
-    for stop in Stop.objects.all():
-        connections = []
-
-        for connection in StopsOfLine.objects.filter(stop=stop):
-            previous_connection = StopsOfLine.objects.filter(line=connection.line, position=(connection.position + 1))
-
-            if len(previous_connection) != 0:
-                connections.append({
-                    'stop_id': previous_connection[0].stop.id,
-                    'line': connection.line.name,
-                    'direction': connection.line.direction
-                })
-
-        list_of_stops[stop.id] = {
+    return HttpResponse(json.dumps([{
             'id': stop.id,
             'name': stop.name,
             'x': stop.x_coordinate,
-            'y': stop.y_coordinate,
-            'connections': connections
-        }
-
-    return HttpResponse(json.dumps(list_of_stops), content_type='application/json')
+            'y': stop.y_coordinate
+        } for stop in Stop.objects.all()]), content_type='application/json')
 
 
 def lines_with_stops(request):
     """
-    !!!unused!!!
     :param request:
     :return:
     """

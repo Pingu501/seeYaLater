@@ -41,10 +41,6 @@ export default {
     y_coordinate: {
       required: true,
       type: Number
-    },
-    size: {
-      required: true,
-      type: Number
     }
   },
   data() {

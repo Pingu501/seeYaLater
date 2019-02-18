@@ -13,22 +13,6 @@
         :name="stop.name"
         :x_coordinate="stop.x"
         :y_coordinate="stop.y"
-        :size="stop.size"
-      />
-      <Connection
-        v-for="connection in connections"
-        :key="getConnectionKey(connection)"
-        :stop1="connection.stop1"
-        :x1="connection.x1"
-        :y1="connection.y1"
-
-        :stop2="connection.stop2"
-        :x2="connection.x2"
-        :y2="connection.y2"
-        :line="connection.line"
-
-        :selected="selected"
-        :onSelectLine="handleLineSelect"
       />
     </svg>
   </section>
@@ -42,23 +26,15 @@ import colorMapper from '~/components/ColorMapper';
 
 export default {
   components: {Stop, Connection},
-  data() {
-    return {
-      stops: {},
-      connections: [],
-      selected: null,
-      minX: 0,
-      minY: 0,
-      maxX: 100,
-      maxY: 100
-    }
-  },
-  computed: {
-    viewBox() {
-      return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
-    }
-  },
-  async created() {
+  async data() {
+    this.stops = {};
+    this.connections = [];
+    this.selected = null;
+    this.minX = 0;
+    this.minY = 0;
+    this.maxX = 100;
+    this.maxY = 100;
+
     try {
       // fetch stops
       const stopResponse = await this.$axios.get('stops');
@@ -80,15 +56,16 @@ export default {
         tmp[stop.id] = {
           ...stop,
           x: stop.x - minX,
-          y: ((stop.y - minY) - midY) * -1,
-          size: stop.connections.length
+          y: ((stop.y - minY) - midY) * -1
         }
       });
 
       this.maxX = maxX - minX;
       this.maxY = (maxY - minY);
+      console.log(tmp);
+      this.stops = tmp;
 
-      stopValues.forEach(stop => {
+      /* stopValues.forEach(stop => {
         const numberOfConnections = stop.connections.length;
         const addedLines = [];
 
@@ -108,9 +85,14 @@ export default {
             y2: this.stops[connection.stop_id].y,
           });
         });
-      })
+      }) */
     } catch (e) {
       console.log(e);
+    }
+  },
+  computed: {
+    viewBox() {
+      return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
     }
   },
   methods: {
