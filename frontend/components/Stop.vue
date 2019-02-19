@@ -5,8 +5,8 @@
     @mouseleave="toggleName"
   >
     <text
-      :x="x_coordinate + 100"
-      :y="y_coordinate + 60"
+      :x="x + 100"
+      :y="y + 60"
       :class="{'stop_text--hidden': !nameIsVisible}"
       class="stop__text"
     >
@@ -14,8 +14,8 @@
     </text>
     <rect
       :id="id"
-      :x="x_coordinate"
-      :y="y_coordinate"
+      :x="x"
+      :y="y"
       :width="width"
       :height="height"
       class="stop__rect"
@@ -34,11 +34,11 @@ export default {
       required: true,
       type: String
     },
-    x_coordinate: {
+    x: {
       required: true,
       type: Number
     },
-    y_coordinate: {
+    y: {
       required: true,
       type: Number
     }

@@ -11,8 +11,8 @@
         :key="stop.id"
         :id="stop.id"
         :name="stop.name"
-        :x_coordinate="stop.x"
-        :y_coordinate="stop.y"
+        :x="stop.x"
+        :y="stop.y"
       />
     </svg>
   </section>
@@ -38,7 +38,6 @@ export default {
     try {
       // fetch stops
       const stopResponse = await this.$axios.get('stops');
-
       const stopValues = Object.values(stopResponse.data);
 
       const x_coordinates = stopValues.map(e => e.x);
@@ -53,7 +52,7 @@ export default {
 
       const tmp = {};
       stopValues.forEach(stop => {
-        tmp[stop.id] = {
+        this.stops[stop.id] = {
           ...stop,
           x: stop.x - minX,
           y: ((stop.y - minY) - midY) * -1
@@ -61,31 +60,8 @@ export default {
       });
 
       this.maxX = maxX - minX;
-      this.maxY = (maxY - minY);
-      console.log(tmp);
-      this.stops = tmp;
-
-      /* stopValues.forEach(stop => {
-        const numberOfConnections = stop.connections.length;
-        const addedLines = [];
-
-        stop.connections.forEach(connection => {
-          this.connections.push({
-            numberOfConnections: numberOfConnections,
-
-            line: connection.line,
-            direction: connection.direction,
-
-            stop1: stop.id,
-            x1: this.stops[stop.id].x,
-            y1: this.stops[stop.id].y,
-
-            stop2: connection.stop_id,
-            x2: this.stops[connection.stop_id].x,
-            y2: this.stops[connection.stop_id].y,
-          });
-        });
-      }) */
+      this.maxY = maxY - minY;
+      // this.$forceUpdate();
     } catch (e) {
       console.log(e);
     }
