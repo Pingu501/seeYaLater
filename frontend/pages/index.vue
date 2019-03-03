@@ -75,8 +75,9 @@ export default {
 
       const midY = maxY - minY;
 
+      const tmp = {};
       stopValues.forEach(stop => {
-        this.stops[stop.id] = {
+        tmp[stop.id] = {
           ...stop,
           x: stop.x - minX,
           y: ((stop.y - minY) - midY) * -1,

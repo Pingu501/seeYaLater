@@ -72,6 +72,10 @@ class StopInitializer:
 
             response = requests.post('https://webapi.vvo-online.de/tr/pointfinder', {'query': stop.id})
 
+            # skipping on errors
+            if response.status_code >= 400:
+                continue
+
             # first hit should always be the right stop
             result = response.json()['Points'][0]
             p = re.match(r"\d{8}\|\|\|?.*\|(\d*)\|(\d*)\|\d*\|\|", result)
