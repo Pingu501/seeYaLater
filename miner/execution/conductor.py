@@ -26,16 +26,16 @@ class Conductor:
 
         # first we need to fetch all lines from the stops we already know
         print('Fetching all lines ...')
-        # initializer.fetch_lines_from_initial_stops()
+        initializer.fetch_lines_from_initial_stops()
 
         # then we search for all stops the found line serves
         print('Fetching all stops from lines ...')
-        # initializer.fetch_stops_from_lines()
+        initializer.fetch_stops_from_lines()
 
         # get the coordinates of the stops
         if with_coordinates:
             print('Fetching coordinates of stops ...')
-            # initializer.fetch_stop_coordinates()
+            initializer.fetch_stop_coordinates()
 
         print('Finished preparation')
 
@@ -51,7 +51,7 @@ class Conductor:
         # init workers
         workers = []
         for _ in range(10):
-            worker = Thread(target=self.__fetch_departure__, args=(q,))
+            worker = Thread(target=self.__run_worker__, args=(q,))
             worker.setDaemon(True)
             worker.start()
             workers.append(worker)
@@ -75,51 +75,48 @@ class Conductor:
 
             time.sleep(5)
 
-    def __fetch_departure__(self, q: Queue):
+    def __run_worker__(self, q: Queue):
         while True:
-            # this line blocks until something is added to the queue
-            stop_id = q.get()
+            self.__fetch_departure__(q)
 
-            response = requests.get('https://webapi.vvo-online.de/dm',
-                                    {'limit': 10, 'mot': '[Tram, CityBus]', 'stopid': stop_id})
+    def __fetch_departure__(self, q: Queue):
+        # this line blocks until something is added to the queue
+        stop_id = q.get()
 
-            # when fetching fails we wait one minute and try it again
-            one_minute_wait_time = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(minutes=1)
-            if response.status_code >= 400 or 'Departures' not in response.json():
-                self.next_fetch_times[stop_id] = one_minute_wait_time
+        response = requests.get('https://webapi.vvo-online.de/dm',
+                                {'limit': 10, 'mot': '[Tram, CityBus]', 'stopid': stop_id})
+
+        # when fetching fails we wait 5 minute and try it again
+        one_minute_wait_time = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(minutes=5)
+        if response.status_code >= 400 or 'Departures' not in response.json():
+            self.next_fetch_times[stop_id] = one_minute_wait_time
+            return
+
+        # longest wait time is 3 hours
+        time_to_wait = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(hours=3)
+        stop = Stop.objects.get(id=stop_id)
+
+        for departure_json in response.json()['Departures']:
+            departure = self.create_departure_from_json(departure_json, stop)
+
+            if not departure:
                 continue
 
-            time_to_wait = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(1)
-            stop = Stop.objects.get(id=stop_id)
+            if departure.real_time < time_to_wait:
+                time_to_wait = departure.real_time
 
-            for departure_json in response.json()['Departures']:
-                departure = self.create_departure_from_json(departure_json, stop)
+        # always wait at least 60 seconds
+        now = datetime.datetime.now(pytz.utc)
+        if (time_to_wait - now) < datetime.timedelta(minutes=1):
+            time_to_wait = now + datetime.timedelta(minutes=1)
 
-                if not departure:
-                    continue
-
-                if departure.real_time < time_to_wait:
-                    time_to_wait = departure.real_time
-
-            # always wait at least 60 seconds
-            now = datetime.datetime.now(pytz.utc)
-            if time_to_wait - now < datetime.timedelta(0, 60):
-                time_to_wait = now + datetime.timedelta(0, 60)
-
-            self.next_fetch_times[stop_id] = time_to_wait
+        self.next_fetch_times[stop_id] = time_to_wait
 
     @staticmethod
     def create_departure_from_json(departure_json: dict, stop: Stop) -> Optional[Departure]:
         try:
             line = Line.objects.get_or_create(name=departure_json['LineName'], direction=departure_json['Direction'])[0]
-
-            # split it up to reduce load on sql server
-            departures = Departure.objects.filter(stop=stop, internal_id=departure_json['Id'], line=line)
-
-            departure = departures.first() \
-                if departures.exists() \
-                else Departure.objects.create(stop=stop, internal_id=departure_json['Id'], line=line)
-
+            departure = Departure.objects.get_or_create(stop=stop, internal_id=departure_json['Id'], line=line)[0]
         except Exception:
             return None
 
@@ -132,6 +129,7 @@ class Conductor:
 
     @staticmethod
     def parse_date_string_to_datetime(date: str) -> datetime:
+        # TODO: extract this!
         p = re.match(r"/Date\((\d{13})([-|+]0\d)00\)/", date)
 
         if p:
@@ -140,5 +138,6 @@ class Conductor:
             return datetime.datetime.fromtimestamp(timestamp / 1000, datetime.timezone(timedelta))
 
         else:
+            # TODO: why add a 2 hours time delta?
             return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S').astimezone(
                 datetime.timezone(datetime.timedelta(hours=2)))
