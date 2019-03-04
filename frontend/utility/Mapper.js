@@ -9,6 +9,22 @@ const colors = [
   '#859900'
 ];
 
+
+function getSide(previousStop, currentStop) {
+  if (!previousStop) {
+    return 2;
+  }
+
+  const dx = currentStop.x - previousStop.x;
+  const dy = currentStop.y - previousStop.y;
+
+  if (Math.abs(dx) > Math.abs(dy)) {
+    return dx < 0 ? 2 : 4;
+  } else {
+    return dy < 0 ? 1 : 3;
+  }
+}
+
 class Mapper {
 
   constructor() {
@@ -22,16 +38,33 @@ class Mapper {
 
   getStop = stopId => this.stops[stopId];
 
-  getOffsetForSide = (stopId, sideIndex) => {
-    const keys = Object.keys(this.sideMapping);
-
-    if (keys.indexOf(stopId) === -1) {
-      this.sideMapping[stopId] = {1: 0, 2: 0, 3: 0, 4: 0};
+  // get correct side of the stop, 1 is up, 2 is right, 3 is down, 4 is left
+  getSideOfStop(previousStop, currentStop, line) {
+    if (!this.sideMapping[currentStop.id]) {
+      this.sideMapping[currentStop.id] = {};
     }
 
-    this.sideMapping[stopId][sideIndex]++;
-    return this.sideMapping[stopId][sideIndex];
-  };
+    if (!this.sideMapping[currentStop.id][line]) {
+      const side = getSide(previousStop, currentStop);
+
+      this.sideMapping[currentStop.id][line] = {
+        side: side,
+        offset: this.getOffsetForSide(currentStop, side)
+      }
+    }
+
+    return this.sideMapping[currentStop.id][line];
+  }
+
+  getOffsetForSide(stop, side) {
+    let offset = 0;
+    Object.values(this.sideMapping[stop.id]).forEach(entry => {
+      if (entry.side === side) {
+        offset++;
+      }
+    });
+    return offset;
+  }
 
   getColorForLine(line) {
     const keys = Object.keys(this.colorMap);
