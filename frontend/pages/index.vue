@@ -6,6 +6,13 @@
       width="100%"
       class="map"
     >
+      <TramLine
+        v-for="line in lines"
+        :key="getTramLineKey(line)"
+        :line="line.line"
+        :direction="line.direction"
+        :stops="line.stops"
+      />
       <Stop
         v-for="stop in stops"
         :key="stop.id"
@@ -20,14 +27,16 @@
 
 <script>
 import Stop from '~/components/Stop';
-import Connection from '~/components/Connection';
+import TramLine from '~/components/TramLine';
+
+import mapper from '~/utility/Mapper'
 
 export default {
-  components: {Stop, Connection},
+  components: {Stop, TramLine},
   data() {
     return {
       stops: {},
-      connections: [],
+      lines: {},
       selected: null,
       minX: 0,
       minY: 0,
@@ -40,7 +49,7 @@ export default {
       return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
     }
   },
-  /* async created() {
+  async created() {
     try {
       // fetch stops
       const stopResponse = await this.$axios.get('stops');
@@ -56,34 +65,36 @@ export default {
 
       const midY = maxY - minY;
 
-      const tmp = {};
       stopValues.forEach(stop => {
-        this.stops[stop.id] = {
+        const modifiedStop = {
           ...stop,
           x: stop.x - minX,
           y: ((stop.y - minY) - midY) * -1
-        }
+        };
+
+        mapper.addStop(modifiedStop);
+        this.stops[stop.id] = modifiedStop;
       });
 
       this.maxX = maxX - minX;
       this.maxY = maxY - minY;
-      // this.$forceUpdate();
+
+      const lineResponse = await this.$axios.get('stops-of-lines');
+      Object.values(lineResponse.data).forEach(line => {
+        this.lines[`${line.line}-${line.direction}`] = line;
+      });
+      this.$forceUpdate();
     } catch (e) {
       console.log(e);
     }
   },
-  computed: {
-    viewBox() {
-      return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
-    }
-  },
   methods: {
-    getConnectionKey(connection) {
-      return `${connection.line}-${connection.direction}-${connection.stop1}-${connection.stop2}`;
+    getTramLineKey(line) {
+      return `${line.line}-${line.direction}`;
     },
     handleLineSelect(line) {
       this.selected = (this.selected === line) ? null : line;
     }
-  }*/
+  }
 }
 </script>

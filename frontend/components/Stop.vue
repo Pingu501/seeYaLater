@@ -24,42 +24,42 @@
 </template>
 
 <script>
-export default {
-  props: {
-    id: {
-      required: true,
-      type: Number
+  export default {
+    props: {
+      id: {
+        required: true,
+        type: Number
+      },
+      name: {
+        required: true,
+        type: String
+      },
+      x: {
+        required: true,
+        type: Number
+      },
+      y: {
+        required: true,
+        type: Number
+      }
     },
-    name: {
-      required: true,
-      type: String
+    data() {
+      return {
+        nameIsVisible: false
+      }
     },
-    x: {
-      required: true,
-      type: Number
+    computed: {
+      width() {
+        return 100
+      },
+      height() {
+        return 100; // this.size * 30
+      }
     },
-    y: {
-      required: true,
-      type: Number
+    methods: {
+      toggleName() {
+        this.nameIsVisible = !this.nameIsVisible;
+      }
     }
-  },
-  data() {
-    return {
-      nameIsVisible: false
-    }
-  },
-  computed: {
-    width() {
-      return 100
-    },
-    height() {
-      return 100; // this.size * 30
-    }
-  },
-  methods: {
-    toggleName() {
-      this.nameIsVisible = !this.nameIsVisible;
-    }
-  }
-};
+  };
 </script>
