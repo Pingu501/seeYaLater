@@ -35,10 +35,8 @@
 </template>
 
 <script>
-import axios from 'axios';
 import Stop from '~/components/Stop';
 import Connection from '~/components/Connection';
-import colorMapper from '~/components/ColorMapper';
 
 export default {
   components: {Stop, Connection},
@@ -51,14 +49,14 @@ export default {
       minY: 0,
       maxX: 100,
       maxY: 100
-    }
-  },
+    },
+  }
   computed: {
     viewBox() {
       return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
     }
   },
-  async created() {
+  /* async created() {
     try {
       // fetch stops
       const stopResponse = await this.$axios.get('stops');
@@ -87,28 +85,6 @@ export default {
 
       this.maxX = maxX - minX;
       this.maxY = (maxY - minY);
-
-      stopValues.forEach(stop => {
-        const numberOfConnections = stop.connections.length;
-        const addedLines = [];
-
-        stop.connections.forEach(connection => {
-          this.connections.push({
-            numberOfConnections: numberOfConnections,
-
-            line: connection.line,
-            direction: connection.direction,
-
-            stop1: stop.id,
-            x1: this.stops[stop.id].x,
-            y1: this.stops[stop.id].y,
-
-            stop2: connection.stop_id,
-            x2: this.stops[connection.stop_id].x,
-            y2: this.stops[connection.stop_id].y,
-          });
-        });
-      })
     } catch (e) {
       console.log(e);
     }
@@ -120,6 +96,6 @@ export default {
     handleLineSelect(line) {
       this.selected = (this.selected === line) ? null : line;
     }
-  }
+  }*/
 }
 </script>

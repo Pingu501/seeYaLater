@@ -17,7 +17,18 @@ class Line(models.Model):
     trip = models.IntegerField(default=0)
 
 
+# archive for departure
 class Departure(models.Model):
+    internal_id = models.IntegerField()
+    stop = models.ForeignKey(Stop, on_delete=models.DO_NOTHING)
+    line = models.ForeignKey(Line, on_delete=models.DO_NOTHING)
+
+    scheduled_time = models.DateTimeField('scheduled time', null=True)
+    real_time = models.DateTimeField('real time', null=True)
+
+
+# transit table for departure
+class TmpDeparture(models.Model):
     internal_id = models.IntegerField()
     stop = models.ForeignKey(Stop, on_delete=models.DO_NOTHING)
     line = models.ForeignKey(Line, on_delete=models.DO_NOTHING)

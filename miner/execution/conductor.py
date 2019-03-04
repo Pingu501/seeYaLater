@@ -11,7 +11,7 @@ import pytz
 import requests
 
 from miner.execution.stop_initializer import StopInitializer
-from miner.models import Stop, Departure, Line
+from miner.models import Stop, Departure, Line, TmpDeparture
 
 
 class Conductor:
@@ -56,6 +56,12 @@ class Conductor:
             worker.start()
             workers.append(worker)
 
+        # create daemon to transfer departure from tmp
+        worker = Thread(target=self.__transfer_tmp_departures__, args=())
+        worker.setDaemon(True)
+        worker.start()
+        workers.append(worker)
+
         while True:
             now = datetime.datetime.now().astimezone(pytz.utc)
 
@@ -78,6 +84,25 @@ class Conductor:
     def __run_worker__(self, q: Queue):
         while True:
             self.__fetch_departure__(q)
+
+    def __run_tmp_transfer_worker__(self):
+        while True:
+            self.__transfer_tmp_departures__()
+            time.sleep(60 * 10)
+
+    @staticmethod
+    def __transfer_tmp_departures__():
+        """
+        after 30 minutes departures will never be touched again, so we transfer them to the archive
+        :return: none
+        """
+        old_limit = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
+        tmp_departures = TmpDeparture.objects.filter(real_time__lte=old_limit)
+
+        for departure in tmp_departures:
+            Departure.objects.create(internal_id=departure.internal_id, stop=departure.stop, line=departure.line,
+                                     scheduled_time=departure.scheduled_time, real_time=departure.real_time)
+            departure.delete()
 
     def __fetch_departure__(self, q: Queue):
         # this line blocks until something is added to the queue
@@ -113,10 +138,10 @@ class Conductor:
         self.next_fetch_times[stop_id] = time_to_wait
 
     @staticmethod
-    def create_departure_from_json(departure_json: dict, stop: Stop) -> Optional[Departure]:
+    def create_departure_from_json(departure_json: dict, stop: Stop) -> Optional[TmpDeparture]:
         try:
             line = Line.objects.get_or_create(name=departure_json['LineName'], direction=departure_json['Direction'])[0]
-            departure = Departure.objects.get_or_create(stop=stop, internal_id=departure_json['Id'], line=line)[0]
+            departure = TmpDeparture.objects.get_or_create(stop=stop, internal_id=departure_json['Id'], line=line)[0]
         except Exception:
             return None
 
