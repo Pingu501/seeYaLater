@@ -19,22 +19,28 @@
 </template>
 
 <script>
-import axios from 'axios';
 import Stop from '~/components/Stop';
 import Connection from '~/components/Connection';
-import colorMapper from '~/components/ColorMapper';
 
 export default {
   components: {Stop, Connection},
-  async data() {
-    this.stops = {};
-    this.connections = [];
-    this.selected = null;
-    this.minX = 0;
-    this.minY = 0;
-    this.maxX = 100;
-    this.maxY = 100;
-
+  data() {
+    return {
+      stops: {},
+      connections: [],
+      selected: null,
+      minX: 0,
+      minY: 0,
+      maxX: 100,
+      maxY: 100
+    }
+  },
+  computed: {
+    viewBox() {
+      return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
+    }
+  },
+  /* async created() {
     try {
       // fetch stops
       const stopResponse = await this.$axios.get('stops');
@@ -78,6 +84,6 @@ export default {
     handleLineSelect(line) {
       this.selected = (this.selected === line) ? null : line;
     }
-  }
+  }*/
 }
 </script>

@@ -6,7 +6,7 @@ from django.test import TestCase
 from unittest.mock import patch
 
 from miner.execution.conductor import Conductor
-from miner.models import Departure, Line, Stop
+from miner.models import Departure, Line, Stop, TmpDeparture
 from miner.tests.MockFunctions import FetchDeparturesRequestMock
 
 
@@ -29,7 +29,7 @@ class ConductorTests(TestCase):
         self.assertTrue(self.q.empty())
         self.assertEqual(len(self.conductor.next_fetch_times), 1)
         self.assertTrue(110 in self.conductor.next_fetch_times)
-        self.assertEqual(Departure.objects.count(), 2)
+        self.assertEqual(TmpDeparture.objects.count(), 2)
 
     @patch('miner.execution.conductor.requests', FetchDeparturesRequestMock)
     def test_fetch_departure_too_short_wait_times(self):
@@ -42,7 +42,7 @@ class ConductorTests(TestCase):
 
         calc_next_fetch = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(seconds=50)
         self.assertTrue((next_fetch_time - calc_next_fetch).seconds <= 10)
-        self.assertEqual(Departure.objects.count(), 1)
+        self.assertEqual(TmpDeparture.objects.count(), 1)
 
     @patch('miner.execution.conductor.requests', FetchDeparturesRequestMock)
     def test_fetch_departure_with_empty_response(self):
@@ -50,6 +50,7 @@ class ConductorTests(TestCase):
 
         self.conductor.__fetch_departure__(self.q)
         self.assertEqual(Departure.objects.count(), 0)
+        self.assertEqual(TmpDeparture.objects.count(), 0)
 
     @patch('miner.execution.conductor.requests', FetchDeparturesRequestMock)
     def test_fetch_departure_with_missing_departures(self):
@@ -57,6 +58,7 @@ class ConductorTests(TestCase):
 
         self.conductor.__fetch_departure__(self.q)
         self.assertEqual(Departure.objects.count(), 0)
+        self.assertEqual(TmpDeparture.objects.count(), 0)
 
     @patch('miner.execution.conductor.requests', FetchDeparturesRequestMock)
     def test_fetch_departure_with_server_error(self):
@@ -64,6 +66,7 @@ class ConductorTests(TestCase):
 
         self.conductor.__fetch_departure__(self.q)
         self.assertEqual(Departure.objects.count(), 0)
+        self.assertEqual(TmpDeparture.objects.count(), 0)
 
     def test_create_departure_from_valid_json(self):
         time = datetime.datetime.now().astimezone(datetime.timezone(datetime.timedelta(hours=2)))
@@ -91,3 +94,27 @@ class ConductorTests(TestCase):
             'Feaf': 'newTestLine',
             'faw': 'newTestDirection',
         }, Stop.objects.get(id=110)))
+
+    def test_tmp_departure_transfer_for_past_departures(self):
+        stop = Stop.objects.create(id=3000, name='Test Stop')
+        line = Line.objects.create(name='TestLine', direction='Test')
+
+        time = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
+
+        TmpDeparture.objects.create(internal_id=500, stop=stop, line=line, scheduled_time=time, real_time=time)
+        self.conductor.__transfer_tmp_departures__()
+
+        self.assertEqual(TmpDeparture.objects.count(), 0)
+        self.assertEqual(Departure.objects.count(), 1)
+
+    def test_tmp_departure_transfer_for_future_departures(self):
+        stop = Stop.objects.create(id=3001, name='Test Stop')
+        line = Line.objects.create(name='TestLine', direction='Test')
+
+        time = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(minutes=30)
+
+        TmpDeparture.objects.create(internal_id=501, stop=stop, line=line, scheduled_time=time, real_time=time)
+        self.conductor.__transfer_tmp_departures__()
+
+        self.assertEqual(TmpDeparture.objects.count(), 1)
+        self.assertEqual(Departure.objects.count(), 0)
