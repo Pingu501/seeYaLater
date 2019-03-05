@@ -5,9 +5,11 @@
         :info-text="infoText"
       />
       <svg
+        v-hammer:pinch="handlePinch"
+        ref="svgRef"
         :viewBox="viewBox"
-        width="100%"
         class="map"
+        width="100%"
         @mousemove="updateShowText"
       >
         <TramLine
@@ -44,7 +46,8 @@
         stops: [],
         lines: [],
         selected: null,
-        infoText: 'ijfeiajg',
+        infoText: '',
+        scale: 1,
         minX: 0,
         minY: 0,
         maxX: 100,
@@ -118,6 +121,9 @@
           default:
             this.infoText = '';
         }
+      },
+      handlePinch(event) {
+        this.$refs.svgRef.style.transform = `scale(${event.scale})`
       }
     }
   }
