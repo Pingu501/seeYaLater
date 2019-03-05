@@ -1,4 +1,11 @@
 .top-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex-grow: 0;
+  flex-shrink: 0;
+
   height: 64px;
   width: 100%;
 

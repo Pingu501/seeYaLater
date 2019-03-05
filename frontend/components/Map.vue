@@ -1,29 +1,47 @@
 <template>
-  <svg
-    v-hammer:pinch="handlePinch"
-    v-hammer:tap="handleMouseMove"
-    ref="svgRef"
-    :viewBox="viewBox"
-    class="map"
-    width="100%"
-    @mousemove="handleMouseMove"
-  >
-    <TramLine
-      v-for="line in lines"
-      :key="getTramLineKey(line)"
-      :line="line.line"
-      :direction="line.direction"
-      :stops="line.stops"
-    />
-    <Stop
-      v-for="stop in stops"
-      :key="stop.id"
-      :id="stop.id"
-      :name="stop.name"
-      :x="stop.x"
-      :y="stop.y"
-    />
-  </svg>
+  <div class="map__wrapper">
+    <svg
+      v-hammer:pinch="handlePinch"
+      v-hammer:pan="handlePan"
+      ref="svgRef"
+      :viewBox="viewBox"
+      class="map"
+      width="100%"
+      @mousemove="handleMouseMove"
+    >
+      <TramLine
+        v-for="line in lines"
+        :key="getTramLineKey(line)"
+        :line="line.line"
+        :direction="line.direction"
+        :stops="line.stops"
+      />
+      <Stop
+        v-for="stop in stops"
+        :key="stop.id"
+        :id="stop.id"
+        :name="stop.name"
+        :x="stop.x"
+        :y="stop.y"
+      />
+    </svg>
+
+    <div class="map--controls">
+      <div
+        class="button"
+        @click="upScale"
+      >
+        +
+      </div>
+
+      <div
+        class="button"
+        @click="downScale"
+      >
+        -
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -66,6 +84,13 @@
         type: Function
       }
     },
+    data() {
+      return {
+        scale: 1,
+        x: 0,
+        y: 0
+      };
+    },
     computed: {
       viewBox() {
         return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
@@ -75,7 +100,11 @@
       getTramLineKey(line) {
         return `${line.line}-${line.direction}`;
       },
-      handleMouseMove() {
+      handleMouseMove(event) {
+        if (!event.path) {
+          return;
+        }
+
         let text = '';
         const element = event.path[0];
         const tagName = element.tagName;
@@ -97,8 +126,25 @@
 
         this.updateInfoText(text);
       },
+      upScale() {
+        this.scale *= 1.5;
+        this.updateMap()
+      },
+      downScale() {
+        this.scale *= 0.75;
+        this.updateMap()
+      },
       handlePinch(event) {
-        this.$refs.svgRef.style.transform = `scale(${event.scale})`
+        this.scale *= event.scale;
+        this.updateMap();
+      },
+      handlePan(event) {
+        this.x += event.deltaX / 10;
+        this.y += event.deltaY / 10;
+        this.updateMap();
+      },
+      updateMap() {
+        this.$refs.svgRef.style.transform = `scale(${this.scale}) translate(${this.x}px, ${this.y}px)`;
       }
     }
   }

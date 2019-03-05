@@ -1,4 +1,5 @@
 @import "Layout";
+@import "Map";
 @import 'Stop';
 @import "TopBar";
 
@@ -7,6 +8,8 @@ html, body {
 
   width: 100%;
   height: 100%;
+
+  overflow: hidden;
 
   color: #c7c7c7;
   text-align: center;
