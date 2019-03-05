@@ -4,59 +4,36 @@
       <TopBar
         :info-text="infoText"
       />
-      <svg
-        v-hammer:pinch="handlePinch"
-        ref="svgRef"
-        :viewBox="viewBox"
-        class="map"
-        width="100%"
-        @mousemove="updateShowText"
-      >
-        <TramLine
-          v-for="line in lines"
-          :key="getTramLineKey(line)"
-          :line="line.line"
-          :direction="line.direction"
-          :stops="line.stops"
-        />
-        <Stop
-          v-for="stop in stops"
-          :key="stop.id"
-          :id="stop.id"
-          :name="stop.name"
-          :x="stop.x"
-          :y="stop.y"
-        />
-      </svg>
+      <Map
+        :minX="minX"
+        :minY="minY"
+        :maxX="maxX"
+        :maxY="maxY"
+        :lines="lines"
+        :stops="stops"
+        :updateInfoText="updateInfoText"
+      />
     </div>
   </section>
 </template>
 
 <script>
+  import Map from '~/components/Map';
   import TopBar from '~/components/TopBar';
-  import Stop from '~/components/Stop';
-  import TramLine from '~/components/TramLine';
 
   import mapper from '~/utility/Mapper'
 
   export default {
-    components: {Stop, TramLine, TopBar},
+    components: {Map, TopBar},
     data() {
       return {
         stops: [],
         lines: [],
-        selected: null,
         infoText: '',
-        scale: 1,
         minX: 0,
         minY: 0,
         maxX: 100,
         maxY: 100
-      }
-    },
-    computed: {
-      viewBox() {
-        return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
       }
     },
     async created() {
@@ -97,33 +74,8 @@
       }
     },
     methods: {
-      getTramLineKey(line) {
-        return `${line.line}-${line.direction}`;
-      },
-      handleLineSelect(line) {
-        this.selected = (this.selected === line) ? null : line;
-      },
-      updateShowText(event) {
-        const element = event.path[0];
-        const tagName = element.tagName;
-
-        switch (tagName) {
-          case 'rect':
-            const stop = mapper.getStop(element.id);
-
-            if (stop) {
-              this.infoText = stop.name;
-            }
-            break;
-          case 'path':
-            this.infoText = 'Linie: ' + element.getAttribute('data-name');
-            break;
-          default:
-            this.infoText = '';
-        }
-      },
-      handlePinch(event) {
-        this.$refs.svgRef.style.transform = `scale(${event.scale})`
+      updateInfoText(infoText) {
+        this.infoText = infoText;
       }
     }
   }

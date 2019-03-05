@@ -1,10 +1,14 @@
-const pkg = require('./package')
+const pkg = require('./package');
 
-const isProd = process.env.NODE_ENV === 'production'
-const isDev = !isProd
+const isProd = process.env.NODE_ENV === 'production';
+const isDev = !isProd;
 
 module.exports = {
   mode: 'universal',
+
+  server: {
+    host: '0.0.0.0', // default: localhost
+  },
 
   /*
   ** Headers of the page
@@ -13,7 +17,7 @@ module.exports = {
     title: pkg.name,
     meta: [
       {charset: 'utf-8'},
-      {name: 'viewport', content: 'user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1'},
+      {name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0'},
       {hid: 'description', name: 'description', content: pkg.description}
     ],
     link: [
