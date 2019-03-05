@@ -35,8 +35,8 @@
     components: {Stop, TramLine},
     data() {
       return {
-        stops: {},
-        lines: {},
+        stops: [],
+        lines: [],
         selected: null,
         minX: 0,
         minY: 0,
@@ -65,7 +65,7 @@
 
         const midY = maxY - minY;
 
-        stopValues.forEach(stop => {
+        this.stops = stopValues.map(stop => {
           const modifiedStop = {
             ...stop,
             x: stop.x - minX,
@@ -73,17 +73,15 @@
           };
 
           mapper.addStop(modifiedStop);
-          this.stops[stop.id] = modifiedStop;
+          return modifiedStop;
         });
 
         this.maxX = maxX - minX;
         this.maxY = maxY - minY;
 
         const lineResponse = await this.$axios.get('stops-of-lines');
-        Object.values(lineResponse.data).forEach(line => {
-          this.lines[`${line.line}-${line.direction}`] = line;
-        });
-        this.$forceUpdate();
+        this.lines = Object.values(lineResponse.data);
+
       } catch (e) {
         console.log(e);
       }
