@@ -1,7 +1,10 @@
 <template>
-  <g>
+  <g
+    class="tram-line__wrapper"
+  >
     <path
       :d="getLinePath()"
+      :data-name="line"
       :stroke="getColorForLine()"
       class="tram-line"
       stroke-width="20"
@@ -26,7 +29,7 @@
       stops: {
         required: true,
         type: Array
-      }
+      },
     },
     methods: {
       getLinePath() {

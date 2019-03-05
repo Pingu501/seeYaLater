@@ -1,17 +1,7 @@
 <template>
   <g
     class="stop__wrapper"
-    @mouseenter="toggleName"
-    @mouseleave="toggleName"
   >
-    <text
-      :x="x + 100"
-      :y="y + 60"
-      :class="{'stop_text--hidden': !nameIsVisible}"
-      class="stop__text"
-    >
-      {{ name }}
-    </text>
     <rect
       :id="id"
       :x="x"
@@ -30,10 +20,6 @@
         required: true,
         type: Number
       },
-      name: {
-        required: true,
-        type: String
-      },
       x: {
         required: true,
         type: Number
@@ -43,22 +29,12 @@
         type: Number
       }
     },
-    data() {
-      return {
-        nameIsVisible: false
-      }
-    },
     computed: {
       width() {
         return 100
       },
       height() {
         return 100; // this.size * 30
-      }
-    },
-    methods: {
-      toggleName() {
-        this.nameIsVisible = !this.nameIsVisible;
       }
     }
   };

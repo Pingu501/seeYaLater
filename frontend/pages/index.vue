@@ -1,43 +1,50 @@
 <template>
   <section class="container">
-    <svg
-      :viewBox="viewBox"
-      height="100%"
-      width="100%"
-      class="map"
-    >
-      <TramLine
-        v-for="line in lines"
-        :key="getTramLineKey(line)"
-        :line="line.line"
-        :direction="line.direction"
-        :stops="line.stops"
+    <div class="rows">
+      <TopBar
+        :info-text="infoText"
       />
-      <Stop
-        v-for="stop in stops"
-        :key="stop.id"
-        :id="stop.id"
-        :name="stop.name"
-        :x="stop.x"
-        :y="stop.y"
-      />
-    </svg>
+      <svg
+        :viewBox="viewBox"
+        width="100%"
+        class="map"
+        @mousemove="updateShowText"
+      >
+        <TramLine
+          v-for="line in lines"
+          :key="getTramLineKey(line)"
+          :line="line.line"
+          :direction="line.direction"
+          :stops="line.stops"
+        />
+        <Stop
+          v-for="stop in stops"
+          :key="stop.id"
+          :id="stop.id"
+          :name="stop.name"
+          :x="stop.x"
+          :y="stop.y"
+        />
+      </svg>
+    </div>
   </section>
 </template>
 
 <script>
+  import TopBar from '~/components/TopBar';
   import Stop from '~/components/Stop';
   import TramLine from '~/components/TramLine';
 
   import mapper from '~/utility/Mapper'
 
   export default {
-    components: {Stop, TramLine},
+    components: {Stop, TramLine, TopBar},
     data() {
       return {
         stops: [],
         lines: [],
         selected: null,
+        infoText: 'ijfeiajg',
         minX: 0,
         minY: 0,
         maxX: 100,
@@ -92,6 +99,25 @@
       },
       handleLineSelect(line) {
         this.selected = (this.selected === line) ? null : line;
+      },
+      updateShowText(event) {
+        const element = event.path[0];
+        const tagName = element.tagName;
+
+        switch (tagName) {
+          case 'rect':
+            const stop = mapper.getStop(element.id);
+
+            if (stop) {
+              this.infoText = stop.name;
+            }
+            break;
+          case 'path':
+            this.infoText = 'Linie: ' + element.getAttribute('data-name');
+            break;
+          default:
+            this.infoText = '';
+        }
       }
     }
   }
