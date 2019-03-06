@@ -5,21 +5,28 @@ This project is not about flaming bus drivers!
 Some bus lines in Dresden seem to be always late ...
 and nobody has the time to proof this right.
 
-But for this we invented computer! ;)
-
-Small **Python3** Script running in the background asking the API of the DVB
-frequently for all departures in Dresden.
-
-> Please make sure you are running Python 3.7
+Python program based on django fetching all departures in Dresden.
 
 [DVB API documentation](https://github.com/kiliankoe/vvo/blob/master/documentation/webapi.md)
 
-## Quick Start
+## Development
 
-Before starting make sure you are running some kind of database and it is configured in `seeYaLater/settings.py`
+### Backend
+
+Before starting make sure you are running python 3.6 or newer and got some kind of database and it is configured in `seeYaLater/settings.py`
 
 ```
 python3 manage.py start_miner
+python3 manage.py runserver
+```
+
+### Frontend
+
+```
+cd frontend
+nvm use
+yarn
+yarn dev
 ```
 
 ## Initial Stops
@@ -40,14 +47,6 @@ python3 manage.py start_miner
 | 33000742 | Helmholtzstraße                               |
 
 
-## Running this project in background
-
-To run this in background use `nohup`. This will survive ssh hangups.
-
-```
-nohup python3 manage.py start_miner
-```
-
 ## Migration from Prototype
 
 Make sure the db file is named `seeYaLater.db` and in the current directory.
@@ -56,10 +55,13 @@ Make sure the db file is named `seeYaLater.db` and in the current directory.
 python3 manage.py migrate_from_prototype
 ```
 
-## TODOs
+## Build & Deployment
 
-- [ ] API
-- [ ] some kind of UI for users to use the data (VueJS)
-- [ ] analyse the data
-- [ ] use weather information
-- [ ] maybe machine learning could be used here?
+```
+cd frontend
+nvm use
+yarn
+yarn generate
+```
+
+[Static Resource Guide](https://docs.djangoproject.com/en/2.1/howto/static-files/)
