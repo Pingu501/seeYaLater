@@ -10,15 +10,13 @@ FROM python:3.6.8-alpine
 
 WORKDIR /app
 
-ENV APACHE_CONFDIR /etc/apache2
-
-RUN apk add mariadb mariadb-client mariadb-dev g++
+RUN apk add mariadb mariadb-client mariadb-dev g++ uwsgi-python3 nginx
 
 # install python dependencies
 ADD requirements.txt /app/
 RUN pip install -r requirements.txt
 
-RUN apk add make apache2 apache2-ctl apache2-dev
+ADD seeYaLater_nginx.conf /etc/nginx/conf.d/
 
 # add compiled frontend to django
 COPY --from=frontend /app/dist/ /app/static/
@@ -26,18 +24,11 @@ COPY --from=frontend /app/dist/ /app/static/
 # apache logs folder
 RUN mkdir /app/logs
 
-# create user for apache
+# create user for nginx
 RUN addgroup seeYaLater
 RUN adduser seeYaLater -D -H -G seeYaLater
 
 COPY --chown=seeYaLater:seeYaLater / /app
-
-RUN wget https://github.com/GrahamDumpleton/mod_wsgi/archive/4.6.5.tar.gz; \
-    tar xfz 4.6.5.tar.gz; \
-    cd mod_wsgi-4.6.5; \
-    ./configure --with-python=/usr/local/bin/python; \
-    make install; \
-    rm -rf mod_wsgi-4.6.5 4.6.5.tar.gz;
 
 # prepaire frontend for django
 RUN python manage.py collectstatic
@@ -46,4 +37,4 @@ RUN rm -rf /app/frontend
 
 # USER seeYaLater
 
-CMD apachectl -d . -f httpd.conf -e info -DFOREGROUND
+CMD ["nginx", "–g", "'daemon off;'"]
