@@ -39,6 +39,9 @@ class StopInitializer:
         now = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
         for line in Line.objects.all():
+            for entry in StopsOfLine.objects.filter(line=line):
+                entry.delete()
+
             if line.trip == 0:
                 continue
 

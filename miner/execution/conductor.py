@@ -1,6 +1,6 @@
 from multiprocessing import Queue
 from threading import Thread
-from typing import Optional
+from typing import Optional, Callable, Iterable
 
 import re
 
@@ -12,6 +12,13 @@ import requests
 
 from miner.execution.stop_initializer import StopInitializer
 from miner.models import Stop, Departure, Line, TmpDeparture
+
+
+def create_and_start_worker(worker_function: Callable, params: Iterable, worker_list: list):
+    worker = Thread(target=worker_function, args=params)
+    worker.setDaemon(True)
+    worker.start()
+    worker_list.append(worker)
 
 
 class Conductor:
@@ -26,16 +33,16 @@ class Conductor:
 
         # first we need to fetch all lines from the stops we already know
         print('Fetching all lines ...')
-        # initializer.fetch_lines_from_initial_stops()
+        initializer.fetch_lines_from_initial_stops()
 
         # then we search for all stops the found line serves
         print('Fetching all stops from lines ...')
-        # initializer.fetch_stops_from_lines()
+        initializer.fetch_stops_from_lines()
 
         # get the coordinates of the stops
         if with_coordinates:
             print('Fetching coordinates of stops ...')
-            # initializer.fetch_stop_coordinates()
+            initializer.fetch_stop_coordinates()
 
         print('Finished preparation')
 
@@ -51,16 +58,15 @@ class Conductor:
         # init workers
         workers = []
         for _ in range(10):
-            worker = Thread(target=self.__run_worker__, args=(q,))
-            worker.setDaemon(True)
-            worker.start()
-            workers.append(worker)
+            create_and_start_worker(self.__run_fetch_worker__, (q,), workers)
 
-        # create daemon to transfer departure from tmp
-        worker = Thread(target=self.__run_tmp_transfer_worker__, args=())
-        worker.setDaemon(True)
-        worker.start()
-        workers.append(worker)
+        # daemon to archive departures
+        create_and_start_worker(self.__run_tmp_transfer_worker__, (), workers)
+
+        # daemon to update lines every 6 hours
+        create_and_start_worker(self.__run_update_lines_worker__, (), workers)
+
+        print('Started {} workers, fetching starts now'.format(len(workers)))
 
         while True:
             now = datetime.datetime.now().astimezone(pytz.utc)
@@ -81,7 +87,7 @@ class Conductor:
 
             time.sleep(5)
 
-    def __run_worker__(self, q: Queue):
+    def __run_fetch_worker__(self, q: Queue):
         while True:
             self.__fetch_departure__(q)
 
@@ -89,6 +95,11 @@ class Conductor:
         while True:
             self.__transfer_tmp_departures__()
             time.sleep(60 * 10)
+
+    def __run_update_lines_worker__(self):
+        while True:
+            time.sleep(60 * 60 * 6)
+            self.prepare(with_coordinates=False)
 
     @staticmethod
     def __transfer_tmp_departures__():
