@@ -80,11 +80,6 @@ class Conductor:
                     self.next_fetch_times[stop] = self.in_queue_marker
                     q.put(stop)
 
-            # restart all failed workers
-            for worker in workers:
-                if not worker.is_alive():
-                    worker.start()
-
             time.sleep(5)
 
     def __run_fetch_worker__(self, q: Queue):
