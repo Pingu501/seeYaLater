@@ -18,11 +18,7 @@ function getSide(previousStop, currentStop) {
   const dx = currentStop.x - previousStop.x;
   const dy = currentStop.y - previousStop.y;
 
-  if (Math.abs(dx) > Math.abs(dy)) {
-    return dx < 0 ? 2 : 4;
-  } else {
-    return dy < 0 ? 1 : 3;
-  }
+  return Math.abs(dx) < Math.abs(dy) ? 1 : 2;
 }
 
 class Mapper {

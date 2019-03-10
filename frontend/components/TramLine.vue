@@ -55,12 +55,6 @@
               coordinates.x += 100;
               coordinates.y += ((sideAndOffset.offset - 1) * 25);
               break;
-            case 3:
-              coordinates.x += (sideAndOffset.offset - 1) * 25;
-              coordinates.y += 100;
-              break;
-            case 4:
-              coordinates.y +=  ((sideAndOffset.offset - 1) * 25);
           }
 
           path += ` L ${coordinates.x} ${coordinates.y}`;

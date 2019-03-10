@@ -1,12 +1,13 @@
 <template>
   <div class="map__wrapper">
     <svg
-      v-hammer:pinch="handlePinch"
-      v-hammer:pan="handlePan"
-      ref="svgRef"
+      ref="map"
       :viewBox="viewBox"
       class="map"
       width="100%"
+      @touchstart="handleTouchStart"
+      @touchmove="handleTouchMove"
+      @mousedown="handleMouseDown"
       @mousemove="handleMouseMove"
     >
       <TramLine
@@ -88,7 +89,9 @@
       return {
         scale: 1,
         x: 0,
-        y: 0
+        y: 0,
+        mouseX: 0,
+        mouseY: 0
       };
     },
     computed: {
@@ -101,6 +104,14 @@
         return `${line.line}-${line.direction}`;
       },
       handleMouseMove(event) {
+        if (event.buttons) {
+          this.handleMove(event.x - this.mouseX, event.y - this.mouseY);
+
+          this.mouseX = event.x;
+          this.mouseY = event.y;
+          return;
+        }
+
         if (!event.path) {
           return;
         }
@@ -134,17 +145,28 @@
         this.scale *= 0.75;
         this.updateMap()
       },
-      handlePinch(event) {
-        this.scale *= event.scale;
-        this.updateMap();
+      handleMouseDown(event) {
+        this.mouseX = event.x;
+        this.mouseY = event.y;
       },
-      handlePan(event) {
-        this.x += event.deltaX / 10;
-        this.y += event.deltaY / 10;
+      handleTouchStart(event) {
+        this.mouseX = event.pageX;
+        this.mouseY = event.pageY;
+      },
+      handleTouchMove(event) {
+        this.scale = event.scale;
+        this.handleMove(event.pageX - this.mouseX, event.pageY - this.mouseY);
+
+        this.mouseX = event.pageX;
+        this.mouseY = event.pageY;
+      },
+      handleMove(x, y) {
+        this.x += x;
+        this.y += y;
         this.updateMap();
       },
       updateMap() {
-        this.$refs.svgRef.style.transform = `scale(${this.scale}) translate(${this.x}px, ${this.y}px)`;
+        this.$refs.map.style.transform = `scale(${this.scale}) translate(${this.x}px, ${this.y}px)`;
       }
     }
   }

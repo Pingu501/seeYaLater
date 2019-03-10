@@ -1,6 +1,8 @@
-.map_wrapper {
+.map__wrapper {
   flex-grow: 1;
   flex-shrink: 0;
+
+  cursor: move;
 }
 
 .map--controls {
