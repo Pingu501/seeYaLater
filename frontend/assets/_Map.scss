@@ -1,8 +1,17 @@
 .map__wrapper {
+  position: fixed;
   flex-grow: 1;
   flex-shrink: 0;
 
-  cursor: move;
+  width: 100%;
+  height: 100%;
+
+  margin-top: 60px;
+
+  > svg {
+    transition-property: all;
+    transition-duration: 100ms;
+  }
 }
 
 .map--controls {

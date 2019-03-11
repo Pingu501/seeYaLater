@@ -1,14 +1,16 @@
 <template>
-  <div class="map__wrapper">
+  <div
+    class="map__wrapper"
+    @touchstart="handleTouchStart"
+    @touchmove="handleTouchMove"
+    @mousedown="handleMouseDown"
+    @mousemove="handleMouseMove"
+  >
     <svg
       ref="map"
       :viewBox="viewBox"
       class="map"
       width="100%"
-      @touchstart="handleTouchStart"
-      @touchmove="handleTouchMove"
-      @mousedown="handleMouseDown"
-      @mousemove="handleMouseMove"
     >
       <TramLine
         v-for="line in lines"
@@ -112,6 +114,7 @@
           return;
         }
 
+        // TODO: not working in firefox!
         if (!event.path) {
           return;
         }
@@ -161,8 +164,8 @@
         this.mouseY = event.pageY;
       },
       handleMove(x, y) {
-        this.x += x;
-        this.y += y;
+        this.x += x / this.scale;
+        this.y += y / this.scale;
         this.updateMap();
       },
       updateMap() {
