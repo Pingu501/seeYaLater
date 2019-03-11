@@ -84,17 +84,25 @@ class Conductor:
 
     def __run_fetch_worker__(self, q: Queue):
         while True:
-            self.__fetch_departure__(q)
+            try:
+                self.__fetch_departure__(q)
+            except:
+                pass
 
     def __run_tmp_transfer_worker__(self):
         while True:
-            self.__transfer_tmp_departures__()
-            time.sleep(60 * 10)
+            try:
+                self.__transfer_tmp_departures__()
+            finally:
+                time.sleep(60 * 10)
 
     def __run_update_lines_worker__(self):
         while True:
             time.sleep(60 * 60 * 6)
-            self.prepare(with_coordinates=False)
+            try:
+                self.prepare(with_coordinates=False)
+            finally:
+                pass
 
     @staticmethod
     def __transfer_tmp_departures__():
