@@ -20,6 +20,9 @@ class StopInitializer:
                                      {'stopid': stop_id, 'mot': '[Tram, CityBus]', 'limit': 30})
             json = response.json()
 
+            if response.status_code > 200:
+                print("Error fetching api! Got {}".format(json))
+
             for departure in json['Departures']:
                 line = Line.objects.get_or_create(name=departure['LineName'], direction=departure['Direction'])[0]
                 try:
@@ -50,15 +53,17 @@ class StopInitializer:
             post_fields = {'tripId': line.trip, 'time': now, 'stopId': self.initial_known_stops[0]}
 
             response = requests.post('https://webapi.vvo-online.de/dm/trip', post_fields)
+            json = response.json()
 
             if response.status_code >= 400:
+                print("Error fetching api! Got {}".format(json))
                 # sort out old lines
                 line.trip = 0
                 line.save()
                 continue
 
             stop_number = 0
-            for stop_raw in response.json()['Stops']:
+            for stop_raw in json['Stops']:
                 stop = Stop.objects.get_or_create(id=stop_raw['Id'])[0]
                 stop.name = stop_raw['Name']
                 stop.save()

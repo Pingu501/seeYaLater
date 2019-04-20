@@ -105,7 +105,7 @@ class Conductor:
                 pass
 
     @staticmethod
-    def __transfer_tmp_departures__():
+    def __transfer_tmp_departures__(enable_log=False):
         """
         after 30 minutes departures will never be touched again, so we transfer them to the archive
         :return: none
@@ -113,10 +113,16 @@ class Conductor:
         old_limit = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
         tmp_departures = TmpDeparture.objects.filter(real_time__lte=old_limit)
 
-        for departure in tmp_departures:
-            Departure.objects.create(internal_id=departure.internal_id, stop=departure.stop, line=departure.line,
-                                     scheduled_time=departure.scheduled_time, real_time=departure.real_time)
-            departure.delete()
+        if enable_log:
+            print("Going to transfer {} tmp departures".format(tmp_departures.count()))
+
+        for tmp_departure in tmp_departures:
+            # print("Transferring {}", tmp_departure.internal_id)
+
+            Departure.objects.create(internal_id=tmp_departure.internal_id, stop=tmp_departure.stop,
+                                     line=tmp_departure.line, scheduled_time=tmp_departure.scheduled_time,
+                                     real_time=tmp_departure.real_time)
+            tmp_departure.delete()
 
     def __fetch_departure__(self, q: Queue):
         # this line blocks until something is added to the queue

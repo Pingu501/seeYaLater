@@ -102,6 +102,8 @@ class ConductorTests(TestCase):
         time = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
 
         TmpDeparture.objects.create(internal_id=500, stop=stop, line=line, scheduled_time=time, real_time=time)
+        self.assertEqual(TmpDeparture.objects.count(), 1)
+
         self.conductor.__transfer_tmp_departures__()
 
         self.assertEqual(TmpDeparture.objects.count(), 0)
@@ -114,6 +116,8 @@ class ConductorTests(TestCase):
         time = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(minutes=30)
 
         TmpDeparture.objects.create(internal_id=501, stop=stop, line=line, scheduled_time=time, real_time=time)
+        self.assertEqual(TmpDeparture.objects.count(), 1)
+
         self.conductor.__transfer_tmp_departures__()
 
         self.assertEqual(TmpDeparture.objects.count(), 1)
