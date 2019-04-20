@@ -117,7 +117,7 @@ class Conductor:
             print("Going to transfer {} tmp departures".format(tmp_departures.count()))
 
         for tmp_departure in tmp_departures:
-            # print("Transferring {}", tmp_departure.internal_id)
+            # print("Transferring {}".format(tmp_departure.internal_id))
 
             Departure.objects.create(internal_id=tmp_departure.internal_id, stop=tmp_departure.stop,
                                      line=tmp_departure.line, scheduled_time=tmp_departure.scheduled_time,
