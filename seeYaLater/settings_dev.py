@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'miner.apps.MinerConfig',
+    'api.apps.ApiConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
@@ -123,5 +124,5 @@ STATICFILES_DIRS = [
 ]
 
 
-STATIC_URL = '/'
+STATIC_URL = '/static/'
 STATIC_ROOT = '/tmp/django'

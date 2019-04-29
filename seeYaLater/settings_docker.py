@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'miner.apps.MinerConfig',
+    'api.apps.ApiConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
@@ -74,10 +75,10 @@ WSGI_APPLICATION = 'seeYaLater.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'seeYaLater',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'host.docker.internal'
+        'NAME': os.environ.get('DB_DATABASE'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST')
     }
 }
 
@@ -123,5 +124,5 @@ STATICFILES_DIRS = [
 ]
 
 
-STATIC_URL = '/'
+STATIC_URL = '/static/'
 STATIC_ROOT = '/tmp/django'
