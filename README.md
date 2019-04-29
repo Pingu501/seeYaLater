@@ -58,10 +58,8 @@ python3 manage.py migrate_from_prototype
 ## Build & Deployment
 
 ```
-cd frontend
-nvm use
-yarn
-yarn generate
+docker build -t see-ya-later:latest . -f deployment/production/Dockerfile
+docker run --rm -p 8000:80 see-ya-later:latest
 ```
 
 [Static Resource Guide](https://docs.djangoproject.com/en/2.1/howto/static-files/)

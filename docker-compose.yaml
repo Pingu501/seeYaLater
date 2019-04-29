@@ -43,6 +43,8 @@ services:
       - yarn_cache:/yarn_cache
     ports:
       - 3000:3000
+    networks:
+      - seeYaLater
 
   #####
   # DB
