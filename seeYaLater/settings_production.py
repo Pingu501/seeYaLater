@@ -75,10 +75,10 @@ WSGI_APPLICATION = 'seeYaLater.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'seeYaLater',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'host.docker.internal'
+        'NAME': os.environ.get('DOKKU_MARIADB_SEEYALATER_ENV_MYSQL_DATABASE'),
+        'USER': os.environ.get('DOKKU_MARIADB_SEEYALATER_ENV_MYSQL_USER'),
+        'PASSWORD': os.environ.get('DOKKU_MARIADB_SEEYALATER_ENV_MYSQL_PASSWORD'),
+        'HOST': 'dokku-mariadb-seeYaLater'
     }
 }
 
@@ -125,4 +125,4 @@ STATICFILES_DIRS = [
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/app/static'
+STATIC_ROOT = '/tmp/static'

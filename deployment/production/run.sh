@@ -2,6 +2,8 @@
 
 set -ex
 
+python manage.py migrate
+
 python manage.py start_miner &
 
 nginx &
