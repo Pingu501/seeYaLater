@@ -56,7 +56,7 @@ module.exports = {
 
   proxy: {
     '/api/': {
-      target: 'http://localhost:8000'
+      target: 'http://django:8000'
     }
   },
 
@@ -79,4 +79,4 @@ module.exports = {
       }
     }
   }
-}
+};

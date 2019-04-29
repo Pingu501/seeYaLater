@@ -1,0 +1,72 @@
+version: '3.5'
+services:
+
+  #####
+  # Django
+  django:
+    build:
+      context: deployment/local-dev/django
+    environment:
+      DJANGO_SETTINGS_MODULE: 'seeYaLater.settings_docker'
+      PIP_CACHE_DIR: '/pip-cache'
+
+      # DB connection
+      DB_HOST: 'maria-db'
+      DB_PORT: 3306
+      DB_PASSWORD: 'django'
+      DB_USER: 'django'
+      DB_DATABASE: 'seeYaLater'
+
+    volumes:
+    - ./api/:/app/api:cached
+    - ./miner/:/app/miner:cached
+    - ./seeYaLater/:/app/seeYaLater:cached
+    - ./manage.py/:/app/manage.py:cached
+    - ./requirements.txt/:/app/requirements.txt:cached
+
+    # pip cache
+    - pip_cache:/pip_cache
+    ports:
+    - 8000:8000
+    networks:
+    - seeYaLater
+
+  #####
+  # Vue
+  vue:
+    build:
+      context: deployment/local-dev/vue
+    environment:
+      YARN_CACHE_FOLDER: '/yarn_cache'
+    volumes:
+      - ./frontend/:/app:cached
+      - yarn_cache:/yarn_cache
+    ports:
+      - 3000:3000
+    networks:
+      - seeYaLater
+
+  #####
+  # DB
+  maria-db:
+    image: mariadb
+    ports:
+      - 13306:3306
+    networks:
+      - seeYaLater
+    environment:
+      MYSQL_ROOT_PASSWORD: 'django'
+      MYSQL_DATABASE: 'seeYaLater'
+      MYSQL_USER: 'django'
+      MYSQL_PASSWORD: 'django'
+    volumes:
+      - mariadb_data:/var/lib/mysql:cached
+
+volumes:
+  pip_cache:
+  yarn_cache:
+  mariadb_data:
+
+networks:
+  seeYaLater:
+    name: seeYaLater
