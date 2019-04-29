@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
-python manage.py collectstatic --no-input
+set -ex
+
+python manage.py start_miner &
 
 nginx &
 
