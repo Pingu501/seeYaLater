@@ -126,7 +126,7 @@ class Conductor:
                                      real_time=tmp_departure.real_time)
             tmp_departure.delete()
 
-        return tmp_departures.count()
+        return TmpDeparture.objects.count()
 
     def __fetch_departure__(self, q: Queue):
         # this line blocks until something is added to the queue
