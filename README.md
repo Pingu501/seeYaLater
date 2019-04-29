@@ -1,11 +1,8 @@
 # SeeYaLater
 
-This project is not about flaming bus drivers!
+**This project is not about flaming bus drivers!**
 
-Some bus lines in Dresden seem to be always late ...
-and nobody has the time to proof this right.
-
-Python program based on django fetching all departures in Dresden.
+This allows use to fetch all departures and their delay in dresden!
 
 [DVB API documentation](https://github.com/kiliankoe/vvo/blob/master/documentation/webapi.md)
 
@@ -29,6 +26,21 @@ yarn
 yarn dev
 ```
 
+## Migration from Prototype
+
+Make sure the db file is named `seeYaLater.db` and in the current directory.
+
+```
+python3 manage.py migrate_from_prototype
+```
+
+## Build & Deployment
+
+```
+docker build -t see-ya-later:latest . -f deployment/production/Dockerfile
+docker run --rm -p 8000:80 see-ya-later:latest
+```
+
 ## Initial Stops
 
 | ID       | Station Name                                  |
@@ -45,21 +57,3 @@ yarn dev
 | 33000588 | Elbepark                                      | 
 | 33000727 | Technische Universität (Fritz-Foerster-Platz) |
 | 33000742 | Helmholtzstraße                               |
-
-
-## Migration from Prototype
-
-Make sure the db file is named `seeYaLater.db` and in the current directory.
-
-```
-python3 manage.py migrate_from_prototype
-```
-
-## Build & Deployment
-
-```
-docker build -t see-ya-later:latest . -f deployment/production/Dockerfile
-docker run --rm -p 8000:80 see-ya-later:latest
-```
-
-[Static Resource Guide](https://docs.djangoproject.com/en/2.1/howto/static-files/)

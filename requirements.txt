@@ -4,4 +4,4 @@ pyparsing==2.2.2
 python-dateutil==2.7.3
 pytz==2018.5
 requests==2.21.0
-urllib3==1.24.1
+urllib3==1.24.2
