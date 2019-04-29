@@ -91,10 +91,12 @@ class Conductor:
 
     def __run_tmp_transfer_worker__(self):
         while True:
+            tmpDeparturesLeft = 1
             try:
-                self.__transfer_tmp_departures__()
+                tmpDeparturesLeft = self.__transfer_tmp_departures__()
             finally:
-                time.sleep(60 * 10)
+                if tmpDeparturesLeft < 1000:
+                    time.sleep(60 * 10)
 
     def __run_update_lines_worker__(self):
         while True:
@@ -108,10 +110,10 @@ class Conductor:
     def __transfer_tmp_departures__(enable_log=False):
         """
         after 30 minutes departures will never be touched again, so we transfer them to the archive
-        :return: none
+        :return: Number of elements left in the database
         """
         old_limit = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
-        tmp_departures = TmpDeparture.objects.filter(real_time__lte=old_limit)
+        tmp_departures = TmpDeparture.objects.filter(real_time__lte=old_limit)[:100]
 
         if enable_log:
             print("Going to transfer {} tmp departures".format(tmp_departures.count()))
@@ -123,6 +125,8 @@ class Conductor:
                                      line=tmp_departure.line, scheduled_time=tmp_departure.scheduled_time,
                                      real_time=tmp_departure.real_time)
             tmp_departure.delete()
+
+        return tmp_departures.count()
 
     def __fetch_departure__(self, q: Queue):
         # this line blocks until something is added to the queue
