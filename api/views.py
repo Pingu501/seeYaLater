@@ -2,13 +2,14 @@ import json
 
 from django.http import HttpResponse
 
-from miner.models import Departure, Stop, Line, StopsOfLine
+from miner.models import Departure, Stop, Line, StopsOfLine, TmpDeparture
 
 
 def index(request):
     data = {
         'stop_count': Stop.objects.count(),
-        'departure_count': Departure.objects.count()
+        'departure_count': Departure.objects.count(),
+        'tmp_departure_count': TmpDeparture.objects.count()
     }
 
     return HttpResponse(json.dumps(data), content_type='application/json')
