@@ -10,6 +10,7 @@
       :height="height"
       class="stop__rect"
       @mouseenter="handleMouseEnter"
+      @click="handleMouseEnter"
     />
   </g>
 </template>
@@ -40,10 +41,10 @@
     },
     computed: {
       width() {
-        return 100
+        return 130
       },
       height() {
-        return 100; // this.size * 30
+        return 130; // this.size * 30
       }
     },
     methods: {

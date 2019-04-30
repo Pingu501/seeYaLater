@@ -1,5 +1,8 @@
 <template>
-  <section class="container">
+  <section
+    class="container"
+    @scroll="handleScroll"
+  >
     <div class="rows">
       <TopBar
         :info-text="infoText"
@@ -76,6 +79,10 @@
     methods: {
       updateInfoText(infoText) {
         this.infoText = infoText;
+      },
+      handleScroll(event) {
+        event.preventDefault();
+        event.stopPropagation();
       }
     }
   }

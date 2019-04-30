@@ -1,5 +1,6 @@
 <template>
   <div
+    v-hammer:pinch="handlePinch"
     class="map__wrapper"
     @touchstart="handleTouchStart"
     @touchmove="handleTouchMove"
@@ -111,7 +112,6 @@
         return `${line.line}-${line.direction}`;
       },
       activateLine(line, direction) {
-        console.log(line, direction, 'Stuff');
         this.activeLine = this.getTramLineKey({line, direction});
       },
       handleMouseMove(event) {
@@ -128,7 +128,11 @@
           return;
         }
 
+        this.updateInfoTextFromEvent(event);
+      },
+      updateInfoTextFromEvent(event) {
         let text = '';
+
         const element = event.path[0];
         const tagName = element.tagName;
 
@@ -146,8 +150,11 @@
           default:
             text = '';
         }
-
         this.updateInfoText(text);
+      },
+      handlePinch(event) {
+        this.scale *= event.scale;
+        this.updateMap();
       },
       upScale() {
         this.scale *= 1.5;
@@ -164,13 +171,19 @@
       handleTouchStart(event) {
         this.mouseX = event.pageX;
         this.mouseY = event.pageY;
+        this.updateInfoTextFromEvent(event);
       },
       handleTouchMove(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
         this.scale = event.scale;
+
         this.handleMove(event.pageX - this.mouseX, event.pageY - this.mouseY);
 
         this.mouseX = event.pageX;
         this.mouseY = event.pageY;
+        this.updateInfoTextFromEvent(event);
       },
       handleMove(x, y) {
         this.x += x / this.scale;
