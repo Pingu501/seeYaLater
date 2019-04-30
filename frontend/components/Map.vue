@@ -18,6 +18,9 @@
         :line="line.line"
         :direction="line.direction"
         :stops="line.stops"
+        :activeLine="activeLine"
+        :onChangeText="updateInfoText"
+        :activateLine="activateLine"
       />
       <Stop
         v-for="stop in stops"
@@ -26,6 +29,7 @@
         :name="stop.name"
         :x="stop.x"
         :y="stop.y"
+        :onChangeText="updateInfoText"
       />
     </svg>
 
@@ -93,7 +97,8 @@
         x: 0,
         y: 0,
         mouseX: 0,
-        mouseY: 0
+        mouseY: 0,
+        activeLine: ''
       };
     },
     computed: {
@@ -104,6 +109,10 @@
     methods: {
       getTramLineKey(line) {
         return `${line.line}-${line.direction}`;
+      },
+      activateLine(line, direction) {
+        console.log(line, direction, 'Stuff');
+        this.activeLine = this.getTramLineKey({line, direction});
       },
       handleMouseMove(event) {
         if (event.buttons) {

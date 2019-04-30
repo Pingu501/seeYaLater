@@ -9,6 +9,7 @@
       :width="width"
       :height="height"
       class="stop__rect"
+      @mouseenter="handleMouseEnter"
     />
   </g>
 </template>
@@ -27,6 +28,14 @@
       y: {
         required: true,
         type: Number
+      },
+      name: {
+        required: true,
+        type: String
+      },
+      onChangeText: {
+        required: true,
+        type: Function
       }
     },
     computed: {
@@ -35,6 +44,11 @@
       },
       height() {
         return 100; // this.size * 30
+      }
+    },
+    methods: {
+      handleMouseEnter() {
+        this.onChangeText(this.name)
       }
     }
   };

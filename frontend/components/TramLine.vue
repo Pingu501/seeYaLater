@@ -9,6 +9,8 @@
       class="tram-line"
       stroke-width="20"
       fill="transparent"
+      @mouseover="handleMouseOver"
+      @click="handleClick"
     />
   </g>
 </template>
@@ -30,6 +32,18 @@
         required: true,
         type: Array
       },
+      activeLine: {
+        required: true,
+        type: String
+      },
+      onChangeText: {
+        required: true,
+        type: Function
+      },
+      activateLine: {
+        required: true,
+        type: Function
+      }
     },
     methods: {
       getLinePath() {
@@ -49,11 +63,11 @@
 
           switch (sideAndOffset.side) {
             case 1:
-              coordinates.x += (sideAndOffset.offset - 1) * 25;
+              coordinates.x += (sideAndOffset.offset - 1) * 40;
               break;
             case 2:
               coordinates.x += 100;
-              coordinates.y += ((sideAndOffset.offset - 1) * 25);
+              coordinates.y += (sideAndOffset.offset - 1) * 40;
               break;
           }
 
@@ -64,7 +78,18 @@
         return path;
       },
       getColorForLine() {
+        if (this.activeLine && this.activeLine !== `${this.line}-${this.direction}`) {
+          return '#ccc';
+        }
         return mapper.getColorForLine(this.line);
+      },
+      handleMouseOver() {
+        // TODO: better way to detect move over
+        // this.onChangeText(this.line + ' - ' + this.direction);
+      },
+      handleClick() {
+        // TODO: better way to detect which line was clicked!
+        // this.activateLine(this.line, this.direction);
       }
     }
   }
