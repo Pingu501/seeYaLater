@@ -66,8 +66,11 @@
           return modifiedStop;
         });
 
-        this.maxX = maxX - minX;
-        this.maxY = maxY - minY;
+        this.minX = minX;
+        this.minY = minY;
+
+        this.maxX = maxX;
+        this.maxY = maxY;
 
         const lineResponse = await this.$axios.get('stops-of-lines');
         this.lines = Object.values(lineResponse.data);

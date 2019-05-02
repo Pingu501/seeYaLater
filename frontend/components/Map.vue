@@ -13,6 +13,11 @@
       class="map"
       width="100%"
     >
+      <Elbe
+        :minX="minX"
+        :minY="minY"
+        :maxY="maxY"
+      />
       <TramLine
         v-for="line in lines"
         :key="getTramLineKey(line)"
@@ -53,13 +58,14 @@
 </template>
 
 <script>
+  import Elbe from '~/components/Elbe'
   import Stop from '~/components/Stop';
   import TramLine from '~/components/TramLine';
 
   import mapper from '~/utility/Mapper'
 
   export default {
-    components: {Stop, TramLine},
+    components: {Elbe, Stop, TramLine},
     props: {
       lines: {
         required: true,
@@ -77,12 +83,10 @@
         required: true,
         type: Number
       },
-
       maxX: {
         required: true,
         type: Number
       },
-
       maxY: {
         required: true,
         type: Number
@@ -104,7 +108,7 @@
     },
     computed: {
       viewBox() {
-        return `${this.minX - 1000} ${this.minY - 1000} ${this.maxX + 1000} ${this.maxY + 1000}`
+        return `-1000 -1000 ${this.maxX - this.minX + 1000} ${this.maxY - this.minY + 1000}`
       }
     },
     methods: {
