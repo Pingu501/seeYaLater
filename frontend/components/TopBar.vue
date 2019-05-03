@@ -14,6 +14,13 @@
       </u>
 
     </div>
+
+    <div
+      v-if="infoText.type === 'text'"
+    >
+      {{ infoText.content }}
+    </div>
+
   </div>
 </template>
 

@@ -138,15 +138,15 @@
         }
       },
       handlePinch(event) {
-        this.scale *= event.scale;
+        this.setScale(this.scale *= event.scale);
         this.updateMap();
       },
       upScale() {
-        this.scale *= 1.5;
+        this.setScale(this.scale *= 1.5);
         this.updateMap()
       },
       downScale() {
-        this.scale *= 0.75;
+        this.setScale(this.scale *= 0.75);
         this.updateMap()
       },
       handleMouseDown(event) {
@@ -161,7 +161,7 @@
         event.preventDefault();
         event.stopPropagation();
 
-        this.scale = event.scale;
+        this.setScale(this.scale *= event.scale);
 
         this.handleMove(event.pageX - this.mouseX, event.pageY - this.mouseY);
 
@@ -172,6 +172,15 @@
         this.x += x / this.scale;
         this.y += y / this.scale;
         this.updateMap();
+      },
+      setScale(scale) {
+        if (scale > 10) {
+          this.scale = 10;
+        } else if (scale < 1) {
+          this.scale = 1;
+        } else {
+          this.scale = scale;
+        }
       },
       updateMap() {
         this.$refs.map.style.transform = `scale(${this.scale}) translate(${this.x}px, ${this.y}px)`;
