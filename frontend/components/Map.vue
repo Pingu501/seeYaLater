@@ -1,6 +1,7 @@
 <template>
   <div
     v-hammer:pinch="handlePinch"
+    :class="{ map__covered: isCovered }"
     class="map__wrapper"
     @touchstart="handleTouchStart"
     @touchmove="handleTouchMove"
@@ -36,6 +37,7 @@
         :x="stop.x"
         :y="stop.y"
         :onChangeText="updateInfoText"
+        :onClickStop="onClickStop"
       />
     </svg>
 
@@ -91,7 +93,15 @@
         required: true,
         type: Number
       },
+      isCovered: {
+        required: true,
+        type: Boolean
+      },
       updateInfoText: {
+        required: true,
+        type: Function
+      },
+      onClickStop: {
         required: true,
         type: Function
       }
@@ -119,42 +129,13 @@
         this.activeLine = this.getTramLineKey({line, direction});
       },
       handleMouseMove(event) {
+        // drag map if mouse button is pressed
         if (event.buttons) {
           this.handleMove(event.x - this.mouseX, event.y - this.mouseY);
 
           this.mouseX = event.x;
           this.mouseY = event.y;
-          return;
         }
-
-        // TODO: not working in firefox!
-        if (!event.path) {
-          return;
-        }
-
-        this.updateInfoTextFromEvent(event);
-      },
-      updateInfoTextFromEvent(event) {
-        let text = '';
-
-        const element = event.path[0];
-        const tagName = element.tagName;
-
-        switch (tagName) {
-          case 'rect':
-            const stop = mapper.getStop(element.id);
-
-            if (stop) {
-              text = 'Haltestelle: ' + stop.name;
-            }
-            break;
-          case 'path':
-            text = 'Linie: ' + element.getAttribute('data-name');
-            break;
-          default:
-            text = '';
-        }
-        this.updateInfoText(text);
       },
       handlePinch(event) {
         this.scale *= event.scale;
@@ -175,7 +156,6 @@
       handleTouchStart(event) {
         this.mouseX = event.pageX;
         this.mouseY = event.pageY;
-        this.updateInfoTextFromEvent(event);
       },
       handleTouchMove(event) {
         event.preventDefault();
@@ -187,7 +167,6 @@
 
         this.mouseX = event.pageX;
         this.mouseY = event.pageY;
-        this.updateInfoTextFromEvent(event);
       },
       handleMove(x, y) {
         this.x += x / this.scale;

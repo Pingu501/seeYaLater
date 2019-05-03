@@ -59,3 +59,29 @@ def lines_with_stops(request):
         cache.set('view_lines_with_stops', all_lines_with_stops)
 
     return HttpResponse(json.dumps(all_lines_with_stops), content_type='application/json')
+
+
+def departure(request):
+    """
+    Get all departures for the request
+    :param request: needs stopId, time and limit
+    :return:
+    """
+    stop_id = request.GET['stop_id']
+    # departure_time = request.GET['time'] if request.GET['time'] else None
+    # limit = request.GET['limit'] if request.GET['limit'] else 10
+
+    if not stop_id:
+        return __bad_request_response('Parameter stop_id is required')
+
+    departures = TmpDeparture.objects.filter(stop=stop_id).order_by('-real_time')[:20]
+
+    return HttpResponse(json.dumps([{
+        'scheduled': e.scheduled_time.timestamp(),
+        'real': e.real_time.timestamp(),
+        'line': "{} - {}".format(e.line.name, e.line.direction)
+    } for e in departures]), content_type='application/json')
+
+
+def __bad_request_response(text):
+    return HttpResponse(text, status=400)

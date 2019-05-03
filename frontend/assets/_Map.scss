@@ -8,6 +8,19 @@
 
   margin-top: 60px;
 
+  $blurRadius: 3px;
+  &.map__covered {
+    -webkit-filter: blur($blurRadius);
+    -moz-filter: blur($blurRadius);
+    -o-filter: blur($blurRadius);
+    -ms-filter: blur($blurRadius);
+    filter: blur($blurRadius);
+  }
+
+  &:active {
+    cursor: all-scroll;
+  }
+
   > svg {
     transition-property: all;
     transition-duration: 100ms;

@@ -9,8 +9,8 @@
       :width="width"
       :height="height"
       class="stop__rect"
-      @mouseenter="handleMouseEnter"
-      @click="handleMouseEnter"
+      @mouseover="handleHoverStop"
+      @click="handleClickStop"
     />
   </g>
 </template>
@@ -37,6 +37,10 @@
       onChangeText: {
         required: true,
         type: Function
+      },
+      onClickStop: {
+        required: true,
+        type: Function
       }
     },
     computed: {
@@ -48,8 +52,14 @@
       }
     },
     methods: {
-      handleMouseEnter() {
-        this.onChangeText(this.name)
+      handleHoverStop() {
+        this.onChangeText({
+          type: 'stop',
+          id: this.id
+        })
+      },
+      handleClickStop() {
+        this.onClickStop(this.id)
       }
     }
   };

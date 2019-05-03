@@ -6,6 +6,7 @@
     <div class="rows">
       <TopBar
         :info-text="infoText"
+        :on-click-stop="handleClickStop"
       />
       <Map
         :minX="minX"
@@ -14,7 +15,13 @@
         :maxY="maxY"
         :lines="lines"
         :stops="stops"
+        :isCovered="showStopDetails"
         :updateInfoText="updateInfoText"
+        :onClickStop="handleClickStop"
+      />
+      <StopDetails
+        v-if="showStopDetails"
+        :on-hide="handleHideStopDetails"
       />
     </div>
   </section>
@@ -22,21 +29,27 @@
 
 <script>
   import Map from '~/components/Map';
+  import StopDetails from '~/components/StopDetails';
   import TopBar from '~/components/TopBar';
 
   import mapper from '~/utility/Mapper'
 
   export default {
-    components: {Map, TopBar},
+    components: {Map, TopBar, StopDetails},
     data() {
       return {
         stops: [],
         lines: [],
-        infoText: '',
+        infoText: {
+          type: 'text',
+          content: ''
+        },
         minX: 0,
         minY: 0,
         maxX: 100,
-        maxY: 100
+        maxY: 100,
+
+        showStopDetails: false
       }
     },
     async created() {
@@ -86,6 +99,21 @@
       handleScroll(event) {
         event.preventDefault();
         event.stopPropagation();
+      },
+      async handleClickStop(stopId) {
+        try {
+          const departureResponse = await this.$axios.get('departure', {params: {stop_id: stopId}});
+          departureResponse.data.forEach(departure => {
+            console.log(new Date((departure.scheduled) * 1000).toLocaleTimeString())
+          });
+
+          this.showStopDetails = true;
+        } catch (e) {
+          console.log(e);
+        }
+      },
+      handleHideStopDetails() {
+        this.showStopDetails = false;
       }
     }
   }
