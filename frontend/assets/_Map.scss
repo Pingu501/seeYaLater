@@ -8,7 +8,7 @@
 
   margin-top: 60px;
 
-  $blurRadius: 3px;
+  $blurRadius: 6px;
   &.map__covered {
     -webkit-filter: blur($blurRadius);
     -moz-filter: blur($blurRadius);

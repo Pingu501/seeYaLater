@@ -1,5 +1,10 @@
 .stop-details__wrapper {
   position: fixed;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   flex-grow: 1;
   flex-shrink: 0;
 
@@ -7,6 +12,51 @@
   height: 100%;
 
   margin-top: 60px;
+  padding-top: 30px;
 
-  background-color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  overflow: auto;
+}
+
+.stop-details__close {
+  color: red;
+  font-size: 2rem;
+  padding: 12px;
+}
+
+.departure--row {
+  display: flex;
+
+  width: 100%;
+  max-width: 400px;
+
+  padding: 4px;
+
+  .departure--line {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 40px;
+  }
+
+  .departure--direction {
+    flex-grow: 3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .departure--scheduled {
+    flex-grow: 0;
+    flex-shrink: 0;
+    align-self: flex-end;
+    width: 40px;
+  }
+
+  .departure--delay {
+    flex-grow: 0;
+    flex-shrink: 0;
+    align-self: flex-end;
+    margin-left: 12px;
+    width: 40px;
+  }
 }

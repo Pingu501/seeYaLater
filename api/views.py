@@ -77,9 +77,11 @@ def departure(request):
     departures = TmpDeparture.objects.filter(stop=stop_id).order_by('-real_time')[:20]
 
     return HttpResponse(json.dumps([{
+        'id': e.id,
         'scheduled': e.scheduled_time.timestamp(),
         'real': e.real_time.timestamp(),
-        'line': "{} - {}".format(e.line.name, e.line.direction)
+        'line': e.line.name,
+        'direction': e.line.direction
     } for e in departures]), content_type='application/json')
 
 

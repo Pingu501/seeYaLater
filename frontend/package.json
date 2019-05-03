@@ -16,6 +16,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
     "cross-env": "^5.2.0",
+    "moment": "^2.24.0",
     "nuxt": "^2.0.0",
     "vue2-hammer": "^2.1.2"
   },

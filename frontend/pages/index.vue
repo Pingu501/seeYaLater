@@ -21,6 +21,7 @@
       />
       <StopDetails
         v-if="showStopDetails"
+        :departures="departureData"
         :on-hide="handleHideStopDetails"
       />
     </div>
@@ -40,6 +41,7 @@
       return {
         stops: [],
         lines: [],
+        departureData: [],
         infoText: {
           type: 'text',
           content: ''
@@ -103,10 +105,8 @@
       async handleClickStop(stopId) {
         try {
           const departureResponse = await this.$axios.get('departure', {params: {stop_id: stopId}});
-          departureResponse.data.forEach(departure => {
-            console.log(new Date((departure.scheduled) * 1000).toLocaleTimeString())
-          });
 
+          this.departureData = departureResponse.data;
           this.showStopDetails = true;
         } catch (e) {
           console.log(e);
