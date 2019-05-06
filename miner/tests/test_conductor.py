@@ -122,18 +122,3 @@ class ConductorTests(TestCase):
 
         self.assertEqual(TmpDeparture.objects.count(), 1)
         self.assertEqual(Departure.objects.count(), 0)
-
-    """def test_maximal_number_of_tmp_departures(self):
-        stop = Stop.objects.create(id=3001, name='Test Stop')
-        line = Line.objects.create(name='TestLine', direction='Test')
-
-        time = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
-
-        for i in range(105):
-            TmpDeparture.objects.create(internal_id=i, stop=stop, line=line, scheduled_time=time, real_time=time)
-        self.assertEqual(TmpDeparture.objects.count(), 105)
-
-        self.conductor.__transfer_tmp_departures__()
-
-        self.assertEqual(TmpDeparture.objects.count(), 5)
-    """

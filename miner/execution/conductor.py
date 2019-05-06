@@ -111,20 +111,19 @@ class Conductor:
     def __transfer_tmp_departures__():
         """
         after 30 minutes departures will never be touched again, so we transfer them to the archive
-        :return: Number of elements left in the database
         """
+
         old_limit = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
-        tmp_departures = TmpDeparture.objects.filter(real_time__lte=old_limit)[:10000]
+        tmp_departure_query = TmpDeparture.objects.filter(real_time__lte=old_limit)
 
-        logger.info('Going to transfer {} tmp departures'.format(tmp_departures.count()))
+        logger.info('Going to transfer {} tmp departures'.format(tmp_departure_query.count()))
 
-        for tmp_departure in tmp_departures:
+        for i in range(0, tmp_departure_query.count() - 1):
+            tmp_departure = tmp_departure_query[i]
             Departure.objects.create(internal_id=tmp_departure.internal_id, stop=tmp_departure.stop,
                                      line=tmp_departure.line, scheduled_time=tmp_departure.scheduled_time,
                                      real_time=tmp_departure.real_time)
             tmp_departure.delete()
-
-        return TmpDeparture.objects.count()
 
     def __fetch_departure__(self, q: Queue):
         # this line blocks until something is added to the queue
