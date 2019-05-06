@@ -64,8 +64,6 @@
   import Stop from '~/components/Stop';
   import TramLine from '~/components/TramLine';
 
-  import mapper from '~/utility/Mapper'
-
   export default {
     components: {Elbe, Stop, TramLine},
     props: {

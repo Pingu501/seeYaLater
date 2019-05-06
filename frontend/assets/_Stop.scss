@@ -1,20 +1,8 @@
-$color: #acacac;
-
 .stop__wrapper {
     padding: 300px;
     z-index: 100;
 }
 
 .stop__rect {
-    fill: $color;
-}
-
-.stop__text {
-    font-size: 250px;
-    fill: $color;
-    z-index: 400;
-
-    &.stop_text--hidden {
-        display: none;
-    }
+    fill: #A29C9B;
 }
