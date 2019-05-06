@@ -3,7 +3,12 @@
     <div class="departure--line">{{ line }}</div>
     <div class="departure--direction">{{ direction }}</div>
     <div class="departure--scheduled">{{ formatDate() }}</div>
-    <div class="departure--delay">{{ getDelay() }}</div>
+    <div
+      :class="getDelayColorClass()"
+      class="departure--delay"
+    >
+      {{ formatDelay() }}
+    </div>
   </div>
 </template>
 
@@ -33,18 +38,32 @@
       formatDate() {
         return moment(this.scheduled, 'X').format('HH:mm')
       },
-      getDelay() {
+      getDelaySeconds() {
         // TODO: .round(10, 'seconds')
         const real = moment(this.real, 'X');
         const scheduled = moment(this.scheduled, 'X');
 
-        const secondsDiff = real.diff(scheduled, 'seconds');
-
+        return real.diff(scheduled, 'seconds');
+      },
+      formatDelay() {
+        const secondsDiff = this.getDelaySeconds();
         const minutes = Math.trunc(Math.abs(secondsDiff) / 60);
         const seconds = Math.abs(secondsDiff) % 60;
 
-        return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        return `${seconds < 0 ? '-' : ' '}${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
       },
+      getDelayColorClass() {
+        const delay = Math.abs(this.getDelaySeconds());
+
+        switch (true) {
+          case delay <= 120:
+            return 'no-delay';
+          case delay <= 300:
+            return 'light-delay';
+          default:
+            return 'high-delay'
+        }
+      }
     }
   }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="stop-details__wrapper">
     <div class="stop-details__header">
       <div
         :class="{'stop-details__header-item--active': tabIsActive('history')}"
@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <div class="stop-details__wrapper">
+    <div class="stop-details__table_wrapper">
       <DelayRow
         v-for="departure in departures"
         :key="departure.id"
