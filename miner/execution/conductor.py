@@ -14,7 +14,7 @@ import requests
 from miner.execution.stop_initializer import StopInitializer
 from miner.models import Stop, Departure, Line, TmpDeparture
 
-logger = logging.getLogger()
+logger = logging.getLogger('miner')
 
 
 def create_and_start_worker(worker_function: Callable, params: Iterable, worker_list: list):

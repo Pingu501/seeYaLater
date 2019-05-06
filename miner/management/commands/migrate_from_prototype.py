@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from miner.execution.conductor import Conductor
 from miner.models import Stop
 
-logger = logging.getLogger()
+logger = logging.getLogger('miner')
 
 
 class Command(BaseCommand):

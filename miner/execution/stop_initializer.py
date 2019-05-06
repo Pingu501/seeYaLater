@@ -6,7 +6,7 @@ import requests
 
 from miner.models import Line, Stop, StopsOfLine
 
-logger = logging.getLogger()
+logger = logging.getLogger('miner')
 
 
 class StopInitializer:
