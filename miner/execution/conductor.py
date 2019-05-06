@@ -5,6 +5,7 @@ from typing import Optional, Callable, Iterable
 import re
 
 import datetime
+import logging
 import time
 import pytz
 
@@ -12,6 +13,8 @@ import requests
 
 from miner.execution.stop_initializer import StopInitializer
 from miner.models import Stop, Departure, Line, TmpDeparture
+
+logger = logging.getLogger()
 
 
 def create_and_start_worker(worker_function: Callable, params: Iterable, worker_list: list):
@@ -32,26 +35,26 @@ class Conductor:
         initializer = StopInitializer()
 
         # first we need to fetch all lines from the stops we already know
-        print('Fetching all lines ...')
+        logger.info('Fetching all lines ...')
         initializer.fetch_lines_from_initial_stops()
 
         # then we search for all stops the found line serves
-        print('Fetching all stops from lines ...')
+        logger.info('Fetching all stops from lines ...')
         initializer.fetch_stops_from_lines()
 
         # get the coordinates of the stops
         if with_coordinates:
-            print('Fetching coordinates of stops ...')
+            logger.info('Fetching coordinates of stops ...')
             initializer.fetch_stop_coordinates()
 
-        print('Finished preparation')
+        logger.info('Finished preparation')
 
     def __init_fetch_times__(self):
         now = datetime.datetime.now().astimezone(pytz.utc)
         self.next_fetch_times = {stop.id: now for stop in Stop.objects.all()}
 
     def start(self):
-        print('Starting workers')
+        logger.info('Starting workers')
         self.__init_fetch_times__()
 
         q = Queue()
@@ -66,7 +69,7 @@ class Conductor:
         # daemon to update lines every 6 hours
         create_and_start_worker(self.__run_update_lines_worker__, (), workers)
 
-        print('Started {} workers, fetching starts now'.format(len(workers)))
+        logger.info('Started {} workers, fetching starts now'.format(len(workers)))
 
         while True:
             now = datetime.datetime.now().astimezone(pytz.utc)
@@ -113,7 +116,7 @@ class Conductor:
         old_limit = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
         tmp_departures = TmpDeparture.objects.filter(real_time__lte=old_limit)[:10000]
 
-        print("Going to transfer {} tmp departures".format(tmp_departures.count()))
+        logger.info('Going to transfer {} tmp departures'.format(tmp_departures.count()))
 
         for tmp_departure in tmp_departures:
             Departure.objects.create(internal_id=tmp_departure.internal_id, stop=tmp_departure.stop,

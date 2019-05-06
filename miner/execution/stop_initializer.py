@@ -1,9 +1,12 @@
 from datetime import datetime, timezone
 
+import logging
 import re
 import requests
 
 from miner.models import Line, Stop, StopsOfLine
+
+logger = logging.getLogger()
 
 
 class StopInitializer:
@@ -21,7 +24,7 @@ class StopInitializer:
             json = response.json()
 
             if response.status_code > 200:
-                print("Error fetching api! Got {}".format(json))
+                logger.warning('Error fetching api! Got {}'.format(json))
 
             for departure in json['Departures']:
                 line = Line.objects.get_or_create(name=departure['LineName'], direction=departure['Direction'])[0]
@@ -56,7 +59,7 @@ class StopInitializer:
             json = response.json()
 
             if response.status_code >= 400:
-                print("Error fetching api! Got {}".format(json))
+                logger.warning('Error fetching api! Got {}'.format(json))
                 # sort out old lines
                 line.trip = 0
                 line.save()
@@ -93,4 +96,4 @@ class StopInitializer:
                 stop.x_coordinate = p.group(2)
                 stop.save()
             except:
-                print('Error while parsing: ', result)
+                logger.warning('Error while parsing: {}'.format(result))

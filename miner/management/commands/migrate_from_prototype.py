@@ -1,3 +1,4 @@
+import logging
 import os.path
 import sqlite3
 
@@ -6,16 +7,18 @@ from django.core.management.base import BaseCommand
 from miner.execution.conductor import Conductor
 from miner.models import Stop
 
+logger = logging.getLogger()
+
 
 class Command(BaseCommand):
     help = 'migrate database from prototype'
 
     def handle(self, *args, **options):
         if not os.path.isfile('seeYaLater.db'):
-            print('No old database found')
+            logger.info('No old database found')
             return
 
-        print('start migration ...')
+        logger.info('start migration ...')
 
         old_entries = self.__fetch_results__()
 
@@ -33,12 +36,12 @@ class Command(BaseCommand):
                     'ScheduledTime': entry[4]
                 }, stop=stop)
             except Exception as e:
-                print('failed to migrate {}'.format(entry), e)
+                logger.critical('failed to migrate {}'.format(entry), e)
             done += 1
 
             # self.__delete_entry__(entry[0], entry[1], stop.id)
             if done % 10000 == 0:
-                print('{}% finished'.format((done / number_of_entries) * 100))
+                logger.info('{}% finished'.format((done / number_of_entries) * 100))
 
     @staticmethod
     def __fetch_results__():

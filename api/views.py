@@ -40,7 +40,6 @@ def lines_with_stops(request):
     all_lines_with_stops = cache.get('view_lines_with_stops')
 
     if not all_lines_with_stops:
-        print('cache not set')
         all_lines_with_stops = []
         lines = Line.objects.all().order_by('name')
 
