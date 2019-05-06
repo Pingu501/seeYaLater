@@ -91,13 +91,16 @@ CACHES = {
     }
 }
 
+log_filename = "/app/logs/system.log"
+os.makedirs(os.path.dirname(log_filename), exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
             'class': 'logging.FileHandler',
-            'filename': '/app/logs/system.log'
+            'filename': log_filename
         },
     },
     'loggers': {
