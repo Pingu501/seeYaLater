@@ -58,12 +58,23 @@
         active: 'history'
       };
     },
+    mounted() {
+      window.onkeydown = this.handleKeyPress;
+    },
+    beforeDestroy() {
+      window.removeEventListener("keydown", this.handleKeyPress);
+    },
     methods: {
       tabIsActive(name) {
         return this.active === name;
       },
       activateView(name) {
         this.active = name;
+      },
+      handleKeyPress(event) {
+        if (event.key === 'Escape') {
+          this.onHide();
+        }
       }
     }
   }

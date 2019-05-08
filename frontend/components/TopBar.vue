@@ -3,16 +3,19 @@
     class="top-bar"
   >
     <div
+      v-if="showLoadingSpinner"
+      class="spinner"
+    />
+
+    <div
       v-if="infoText.type === 'stop'"
+      class="top-bar--content"
       @click="handleClickStop"
     >
-
       Haltestelle: {{ stopName }}
-
       <u class="link-text">
         mehr
       </u>
-
     </div>
 
     <div
@@ -20,7 +23,6 @@
     >
       {{ infoText.content }}
     </div>
-
   </div>
 </template>
 
@@ -31,6 +33,10 @@
     props: {
       infoText: {
         type: Object,
+        required: true
+      },
+      showLoadingSpinner: {
+        type: Boolean,
         required: true
       },
       onClickStop: {

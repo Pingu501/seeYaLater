@@ -6,6 +6,7 @@
     <div class="rows">
       <TopBar
         :info-text="infoText"
+        :show-loading-spinner="isLoading"
         :on-click-stop="handleClickStop"
       />
       <Map
@@ -24,6 +25,13 @@
         :departures="departureData"
         :on-hide="handleHideStopDetails"
       />
+      <div
+        v-if="showError"
+        class="error-message"
+      >
+        Da lief wohl etwas schief!<br>
+        Bitte versuchen Sie es später erneut
+      </div>
     </div>
   </section>
 </template>
@@ -51,14 +59,20 @@
         maxX: 100,
         maxY: 100,
 
+        isLoading: true,
+        showError: false,
         showStopDetails: false
       }
     },
     async created() {
+      this.isLoading = true;
+
       try {
         // fetch stops
         const stopResponse = await this.$axios.get('stops');
         const stopValues = Object.values(stopResponse.data);
+
+        this.showError = false;
 
         const x_coordinates = stopValues.map(e => e.x);
         const minX = Math.min(...x_coordinates);
@@ -89,20 +103,24 @@
 
         const lineResponse = await this.$axios.get('stops-of-lines');
         this.lines = Object.values(lineResponse.data);
-
       } catch (e) {
         console.log(e);
+        this.showError = true;
       }
+
+      this.isLoading = false;
     },
     methods: {
       updateInfoText(infoText) {
         this.infoText = infoText;
       },
       handleScroll(event) {
+        console.log('Page got it');
         event.preventDefault();
         event.stopPropagation();
       },
       async handleClickStop(stopId) {
+        this.isLoading = true;
         try {
           const departureResponse = await this.$axios.get('departure', {params: {stop_id: stopId}});
 
@@ -111,6 +129,7 @@
         } catch (e) {
           console.log(e);
         }
+        this.isLoading = false;
       },
       handleHideStopDetails() {
         this.showStopDetails = false;
