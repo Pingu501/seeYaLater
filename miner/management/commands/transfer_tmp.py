@@ -8,8 +8,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         conductor = Conductor()
-
-        tmpDeparturesLeft = 1001
-
-        while tmpDeparturesLeft > 1000:
-            tmpDeparturesLeft = conductor.__transfer_tmp_departures__()
+        conductor.__transfer_tmp_departures__(run_endless=False)

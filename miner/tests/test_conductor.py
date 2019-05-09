@@ -99,12 +99,12 @@ class ConductorTests(TestCase):
         stop = Stop.objects.create(id=3000, name='Test Stop')
         line = Line.objects.create(name='TestLine', direction='Test')
 
-        time = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
+        time = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=70)
 
         TmpDeparture.objects.create(internal_id=500, stop=stop, line=line, scheduled_time=time, real_time=time)
         self.assertEqual(TmpDeparture.objects.count(), 1)
 
-        self.conductor.__transfer_tmp_departures__()
+        self.conductor.__transfer_tmp_departures__(run_endless=False)
 
         self.assertEqual(TmpDeparture.objects.count(), 0)
         self.assertEqual(Departure.objects.count(), 1)
@@ -113,12 +113,12 @@ class ConductorTests(TestCase):
         stop = Stop.objects.create(id=3001, name='Test Stop')
         line = Line.objects.create(name='TestLine', direction='Test')
 
-        time = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(minutes=30)
+        time = datetime.datetime.now().astimezone(pytz.utc) + datetime.timedelta(minutes=70)
 
         TmpDeparture.objects.create(internal_id=501, stop=stop, line=line, scheduled_time=time, real_time=time)
         self.assertEqual(TmpDeparture.objects.count(), 1)
 
-        self.conductor.__transfer_tmp_departures__()
+        self.conductor.__transfer_tmp_departures__(run_endless=False)
 
         self.assertEqual(TmpDeparture.objects.count(), 1)
         self.assertEqual(Departure.objects.count(), 0)

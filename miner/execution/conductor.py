@@ -64,7 +64,7 @@ class Conductor:
             create_and_start_worker(self.__run_fetch_worker__, (q,), workers)
 
         # daemon to archive departures
-        create_and_start_worker(self.__run_tmp_transfer_worker__, (), workers)
+        create_and_start_worker(self.__transfer_tmp_departures__, (), workers)
 
         # daemon to update lines every 6 hours
         create_and_start_worker(self.__run_update_lines_worker__, (), workers)
@@ -92,13 +92,6 @@ class Conductor:
             except:
                 pass
 
-    def __run_tmp_transfer_worker__(self):
-        while True:
-            try:
-                self.__transfer_tmp_departures__()
-            finally:
-                time.sleep(60 * 10)
-
     def __run_update_lines_worker__(self):
         while True:
             time.sleep(60 * 60 * 6)
@@ -108,22 +101,32 @@ class Conductor:
                 pass
 
     @staticmethod
-    def __transfer_tmp_departures__():
+    def __transfer_tmp_departures__(run_endless=True):
         """
-        after 30 minutes departures will never be touched again, so we transfer them to the archive
+        after 60 minutes departures will never be touched again, so we transfer them to the archive
+
+        we split the departures apart to avoid overloaded memory
         """
+        while True:
+            old_limit = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=60)
+            tmp_departures = TmpDeparture.objects.filter(real_time__lte=old_limit)[:1000]
+            logging.info('Going to transfer {} tmp departures'.format(tmp_departures.count()))
 
-        old_limit = datetime.datetime.now().astimezone(pytz.utc) - datetime.timedelta(minutes=30)
-        tmp_departure_query = TmpDeparture.objects.filter(real_time__lte=old_limit)
+            for tmp_departure in tmp_departures:
+                Departure.objects.create(internal_id=tmp_departure.internal_id, stop=tmp_departure.stop,
+                                         line=tmp_departure.line, scheduled_time=tmp_departure.scheduled_time,
+                                         real_time=tmp_departure.real_time)
 
-        logger.info('Going to transfer {} tmp departures'.format(tmp_departure_query.count()))
+                tmp_departure.delete()
 
-        for i in range(0, tmp_departure_query.count() - 1):
-            tmp_departure = tmp_departure_query[i]
-            Departure.objects.create(internal_id=tmp_departure.internal_id, stop=tmp_departure.stop,
-                                     line=tmp_departure.line, scheduled_time=tmp_departure.scheduled_time,
-                                     real_time=tmp_departure.real_time)
-            tmp_departure.delete()
+            tmp_departure_total_count = TmpDeparture.objects.filter(real_time__lte=old_limit).count()
+            if tmp_departure_total_count < 1000:
+                logging.info('Only {} tmp departures left, going to sleep'.format(tmp_departure_total_count))
+
+                if not run_endless:
+                    return
+
+                time.sleep(60 * 10)
 
     def __fetch_departure__(self, q: Queue):
         # this line blocks until something is added to the queue
