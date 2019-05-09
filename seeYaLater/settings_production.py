@@ -91,7 +91,7 @@ CACHES = {
     }
 }
 
-log_filename = "/app/logs/system.log"
+log_filename = BASE_DIR + "/logs/system.log"
 os.makedirs(os.path.dirname(log_filename), exist_ok=True)
 
 LOGGING = {
