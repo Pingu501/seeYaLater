@@ -24,7 +24,7 @@ class StopInitializer:
             json = response.json()
 
             if response.status_code > 200:
-                logger.warning('Error fetching api! Got {}'.format(json))
+                logger.warning('Error fetching api! Got {} 1'.format(json))
 
             for departure in json['Departures']:
                 line = Line.objects.get_or_create(name=departure['LineName'], direction=departure['Direction'])[0]
@@ -59,7 +59,7 @@ class StopInitializer:
             json = response.json()
 
             if response.status_code >= 400:
-                logger.warning('Error fetching api! Got {}'.format(json))
+                logger.warning('Error fetching api! Got {} 2'.format(json))
                 # sort out old lines
                 line.trip = 0
                 line.save()

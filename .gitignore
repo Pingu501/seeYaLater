@@ -1,5 +1,7 @@
 .idea
 **/*.pyc
 
+/logs
+
 /static
 !/static/.gitkeep
