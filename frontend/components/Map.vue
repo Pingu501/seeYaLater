@@ -11,6 +11,7 @@
     <svg
       ref="map"
       :viewBox="viewBox"
+      :class="{animated: isAnimated}"
       class="map"
       width="100%"
     >
@@ -111,7 +112,8 @@
         y: 0,
         mouseX: 0,
         mouseY: 0,
-        activeLine: ''
+        activeLine: '',
+        isAnimated: false
       };
     },
     computed: {
@@ -141,11 +143,11 @@
       },
       upScale() {
         this.setScale(this.scale *= 1.5);
-        this.updateMap()
+        this.updateMap(true);
       },
       downScale() {
         this.setScale(this.scale *= 0.75);
-        this.updateMap()
+        this.updateMap(true);
       },
       handleMouseDown(event) {
         this.mouseX = event.x;
@@ -180,7 +182,13 @@
           this.scale = scale;
         }
       },
-      updateMap() {
+      updateMap(withAnimation = false) {
+        if (withAnimation) {
+          this.$refs.map.classList.add('animated');
+        } else {
+          this.$refs.map.classList.remove('animated');
+        }
+
         this.$refs.map.style.transform = `scale(${this.scale}) translate(${this.x}px, ${this.y}px)`;
       }
     }
